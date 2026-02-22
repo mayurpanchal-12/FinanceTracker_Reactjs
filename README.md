@@ -36,6 +36,13 @@ The app supports **voice-to-text input**, **search functionality** , **advanced 
   - Optional Notes
 - Edit / delete transactions
 - Highlight or un-highlight any transaction
+- - When the total number of transactions is **10 or more**:
+  - If the **overall balance is positive**:
+    - The **two transactions with the highest income** are highlighted in **green**.
+  - If the **overall balance is negative**:
+    - The **two transactions with the largest expenses** are highlighted in **red**.
+
+This helps users quickly identify their most impactful transactions based on the current financial status.
 
 ---
 
