@@ -36,6 +36,7 @@ Advanced Finance Tracker is a complete personal finance platform where users can
 
 The project focuses on **production-level practices**, not just basic CRUD.
 
+
 ---
 
 ## Application Flow
@@ -221,3 +222,4 @@ cd FinanceTracker_Reactjs
 npm install
 npm run dev
 ```
+
