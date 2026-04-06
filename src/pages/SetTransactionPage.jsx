@@ -25,7 +25,7 @@ export default function SetTransactionPage() {
 
         <TransactionForm scheduledPage={true} />
 
-        <div className="scheduled-card">
+        <div className="scheduled-card card">
           <div className="scheduled-card__header">
             <h2 className="scheduled-card__title">Scheduled Transactions</h2>
             <p className="scheduled-card__subtitle">These will move to the main Tracker on their set date.</p>

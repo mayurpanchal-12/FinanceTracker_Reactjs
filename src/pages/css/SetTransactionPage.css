@@ -21,7 +21,7 @@
 
 /* Scheduled Table Card */
 .scheduled-card {
-  @apply card p-6;
+  @apply  p-6;
 }
 
 .scheduled-card__header {
