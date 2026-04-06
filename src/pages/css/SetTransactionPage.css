@@ -4,11 +4,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@layer utilities {
-  .animate-fade-in {
-    animation: fadeIn 0.3s ease-in-out;
-  }
-}
+
 .page-section {
   @apply animate-fade-in flex flex-col gap-5;
 }
