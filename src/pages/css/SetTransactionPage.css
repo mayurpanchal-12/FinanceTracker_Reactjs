@@ -1,0 +1,122 @@
+@reference "tailwindcss";
+.page-section {
+  @apply animate-fade-in flex flex-col gap-5;
+}
+
+/* Info Banner */
+.info-banner {
+  @apply flex items-start gap-3 px-5 py-4 rounded-xl  border border-primary/15 text-sm text-text-main leading-relaxed;
+}
+
+.info-banner__icon {
+  @apply text-primary text-base mt-0.5;
+}
+
+/* Scheduled Table Card */
+.scheduled-card {
+  @apply card p-6;
+}
+
+.scheduled-card__header {
+  @apply mb-5;
+}
+
+.scheduled-card__title {
+  @apply text-[1.05rem] font-bold text-text-main tracking-tight;
+}
+
+.scheduled-card__subtitle {
+  @apply text-text-light text-xs mt-0.5;
+}
+
+.scheduled-card__table-wrapper {
+  @apply rounded-[14px] overflow-hidden border border-border-solid;
+}
+
+.scheduled-table {
+  @apply w-full border-collapse whitespace-nowrap;
+}
+
+
+
+/* Table Row */
+.table-row {
+  @apply transition-colors ;
+}
+
+.table-row--highlighted {
+  @apply border-l-2 border-l-amber-400;
+}
+
+/* Table Cell Variants */
+.td--index {
+  @apply text-text-light/60 text-xs font-bold;
+}
+
+.td--date {
+  @apply font-medium tabular-nums;
+}
+
+.td--amount-income {
+  @apply font-bold tabular-nums text-emerald-600;
+}
+
+.td--amount-expense {
+  @apply font-bold tabular-nums text-red-500;
+}
+
+.td--description {
+  @apply text-left max-w-[180px];
+}
+
+.td--description-text {
+  @apply block truncate;
+}
+
+/* Type Badge */
+.badge-type {
+  @apply inline-flex px-2.5 py-0.5 rounded-full text-[0.7rem] font-bold uppercase tracking-wide;
+}
+
+.badge-type--income {
+  @apply bg-emerald-100 text-emerald-700;
+}
+
+.badge-type--expense {
+  @apply bg-red-100 text-red-600;
+}
+
+/* Category Badge */
+.badge-category {
+  @apply inline-flex px-2.5 py-0.5 rounded-full text-[0.7rem] font-semibold bg-slate-100 text-text-light;
+}
+
+/* Action Buttons */
+.actions-cell {
+  @apply flex items-center justify-center gap-1.5;
+}
+
+.btn-edit {
+  @apply px-3 py-1.5 text-[0.78rem] font-semibold rounded-lg text-primary hover:bg-primary hover:text-white transition-all duration-150;
+}
+
+.btn-delete {
+  @apply px-3 py-1.5 text-[0.78rem] font-semibold rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-150;
+}
+
+.btn-unstar {
+  @apply px-3 py-1.5 text-[0.78rem] font-semibold rounded-lg bg-slate-100 text-text-light hover:bg-slate-200 transition-all duration-150;
+}
+
+/* Empty State */
+.empty-state {
+  @apply py-12 flex flex-col items-center gap-2 text-text-light;
+}
+
+.empty-state__icon {
+  @apply text-2xl opacity-20;
+}
+
+.empty-state__text {
+  @apply text-sm italic font-medium;
+}

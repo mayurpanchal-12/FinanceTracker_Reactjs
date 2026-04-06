@@ -1,0 +1,113 @@
+@reference "tailwindcss";
+/* ── Page Layout ── */
+.notes-section {
+  @apply   p-6 sm:p-8;
+}
+
+/* ── Header ── */
+.notes-header {
+  @apply mb-7;
+}
+
+.notes-header__title {
+  @apply text-2xl font-bold text-text-main tracking-tight mb-1;
+}
+
+.notes-header__subtitle {
+  @apply text-text-light text-sm;
+}
+
+/* ── Empty State ── */
+.notes-empty {
+  @apply py-16 flex flex-col items-center gap-3 text-text-light border border-dashed border-border-solid rounded-2xl;
+}
+
+.notes-empty__icon {
+  @apply text-4xl opacity-20;
+}
+
+.notes-empty__text {
+  @apply text-sm italic font-medium;
+}
+
+/* ── Notes Grid ── */
+.notes-grid {
+  @apply grid gap-4 list-none;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+}
+
+/* ── Note Card ── */
+.note-card {
+  @apply  relative bg-white rounded-2xl p-5 border border-border-solid shadow-sm overflow-hidden
+         transition-all duration-200
+         hover:-translate-y-1 hover:shadow-md hover:border-primary/25;
+}
+
+/* Side Accent */
+.note-card__accent {
+  @apply absolute top-0 left-0 w-1 h-full rounded-l-2xl;
+}
+
+.note-card__accent--income {
+  @apply bg-emerald-400;
+}
+
+.note-card__accent--expense {
+  @apply bg-red-400;
+}
+
+/* Card Inner */
+.note-card__inner {
+  @apply pl-3 flex flex-col gap-3;
+}
+
+/* Top Row */
+.note-card__top-row {
+  @apply flex items-center justify-between;
+}
+
+.note-card__badge {
+  @apply text-[0.68rem] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full;
+}
+
+.note-card__badge--income {
+  @apply bg-emerald-100 text-emerald-700;
+}
+
+.note-card__badge--expense {
+  @apply bg-red-100 text-red-600;
+}
+
+.note-card__amount {
+  @apply text-xl font-extrabold text-text-main;
+}
+
+/* Details */
+.note-card__details {
+  @apply text-sm space-y-1.5 text-text-light;
+}
+
+.note-card__detail-row {
+  @apply flex justify-between gap-2;
+}
+
+.note-card__detail-key {
+  @apply font-medium;
+}
+
+.note-card__detail-value {
+  @apply font-semibold text-text-main text-right max-w-[55%] truncate;
+}
+
+/* Note Section */
+.note-card__note-section {
+  @apply pt-3 mt-1 border-t border-dashed border-border-solid;
+}
+
+.note-card__note-label {
+  @apply text-[0.75rem] text-text-light font-medium mb-1;
+}
+
+.note-card__note-text {
+  @apply text-sm text-text-main italic leading-relaxed;
+}

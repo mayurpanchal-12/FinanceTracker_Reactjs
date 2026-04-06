@@ -1,53 +1,42 @@
-import { NavLink } from 'react-router-dom';
-import DownloadDropdown from './DownloadDropdown';
+import NavBar from './navbar';
 
-export default function Header() {
+export default function Header({ onOpenSidebar }) {
   return (
-    <header className="text-center py-8 px-5 mb-2.5 animate-[fadeInDown_0.6s_ease-out]">
-      <h1 className="text-5xl font-extrabold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2 tracking-tight">₹ Finance Tracker</h1>
-      <p className="text-text-light text-lg font-medium">Track your income, expenses & balance effortlessly</p>
-      <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
-        <nav className="flex flex-wrap justify-center gap-3 bg-[rgba(255,255,255,0.5)] p-1.5 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)]" aria-label="Main navigation">
-          <NavLink
-            to="/"
-            className={({ isActive }) => `inline-block py-2.5 px-6 rounded-full no-underline font-semibold text-[0.95rem] transition-all duration-300 hover:bg-[rgba(255,255,255,0.8)] hover:text-primary ${isActive ? 'bg-surface-solid text-primary shadow-sm' : 'text-text-light'}`}
-            end
-          >
-            📋 Tracker
-          </NavLink>
-          <NavLink
-            to="/set-transaction"
-            className={({ isActive }) => `inline-block py-2.5 px-6 rounded-full no-underline font-semibold text-[0.95rem] transition-all duration-300 hover:bg-[rgba(255,255,255,0.8)] hover:text-primary ${isActive ? 'bg-surface-solid text-primary shadow-sm' : 'text-text-light'}`}
-          >
-            ➕ Set Transaction
-          </NavLink>
-          <NavLink
-            to="/charts"
-            className={({ isActive }) => `inline-block py-2.5 px-6 rounded-full no-underline font-semibold text-[0.95rem] transition-all duration-300 hover:bg-[rgba(255,255,255,0.8)] hover:text-primary ${isActive ? 'bg-surface-solid text-primary shadow-sm' : 'text-text-light'}`}
-          >
-            📊 View Charts
-          </NavLink>
-        </nav>
-        <div className="flex items-center">
-          <DownloadDropdown />
-          <NavLink
-            to="/notes"
-            className={({ isActive }) =>
-              `inline-block py-3 px-6 rounded-full border border-primary/20 bg-surface-solid text-primary font-semibold no-underline transition-all duration-300 shadow-sm hover:bg-primary hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_15px_rgba(99,102,241,0.2)] ml-2 ${isActive ? '!bg-primary !text-white' : ''}`
-            }
-          >
-            📝 Notes
-          </NavLink>
-           <NavLink
-            to="/news"
-            className={({ isActive }) =>
-              `inline-block py-3 px-6 rounded-full border border-primary/20 bg-surface-solid text-primary font-semibold no-underline transition-all duration-300 shadow-sm hover:bg-primary hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_15px_rgba(99,102,241,0.2)] ml-2 ${isActive ? '!bg-primary !text-white' : ''}`
-            }
-          >
-              📰 News
-          </NavLink>
+    <header className="py-8 px-2 mb-1 animate-[fadeInDown_0.6s_ease-out] relative">
+
+      <div className="flex flex-col items-center gap-1 mb-8 mt-2 sm:mt-0">
+        <div className="flex items-center gap-3 mb-1">
+          <span className="text-3xl font-bold text-primary opacity-60 select-none">₹</span>
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-text-main">
+            Finance{' '}
+            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              Tracker
+            </span>
+          </h1>
         </div>
+        <p className="text-text-light text-sm font-medium tracking-wide">
+          Income · Expenses · Balance — beautifully organised
+        </p>
       </div>
+
+      
+      <div className="flex items-center justify-center gap-2 relative z-10">
+      
+        <button
+          onClick={onOpenSidebar}
+          className="flex items-center justify-center p-2 sm:p-2.5 rounded-xl bg-white/60 border border-white/80 shadow-sm backdrop-blur-md hover:bg-white/90 dark:bg-gray-800/60 dark:border-gray-700/80 dark:hover:bg-gray-700/80 text-primary transition-all duration-200 shrink-0 self-stretch"
+          title="Open Tools Sidebar"
+          aria-label="Open sidebar"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+
+        <NavBar />
+      </div>
+
+      <div className="mt-8 h-px bg-gradient-to-r from-transparent via-primary/15 to-transparent" />
     </header>
   );
 }

@@ -1,0 +1,61 @@
+@reference "tailwindcss";
+/* ── Page Wrapper ── */
+.chart-page {
+  @apply flex flex-col gap-6 pb-10;
+}
+
+/* ── Line Chart Section ── */
+.chart-section {
+  @apply p-6 sm:p-8;
+}
+
+.chart-section__title {
+  @apply text-[1.05rem] font-bold text-text-main mb-5 tracking-tight;
+}
+
+.chart-section__canvas-wrap {
+  @apply w-full h-[300px] bg-white rounded-xl border border-border-solid p-4 shadow-sm;
+}
+
+/* ── Pie Charts Section ── */
+.pie-section {
+  @apply p-6 sm:p-8;
+}
+
+.pie-section__title {
+  @apply text-[1.05rem] font-bold text-text-main mb-6 tracking-tight;
+}
+
+.pie-section__grid {
+  @apply flex flex-wrap md:flex-nowrap gap-6 justify-center items-stretch;
+}
+
+/* ── Pie Card ── */
+.pie-card {
+  @apply flex-1 min-w-[270px] max-w-[480px] flex flex-col gap-4 bg-white rounded-2xl border border-border-solid p-5 shadow-sm transition-all duration-200 hover:shadow-md;
+}
+
+.pie-card__label {
+  @apply text-sm font-bold px-4 py-2.5 rounded-xl border text-center;
+}
+
+
+.pie-card__label--income {
+  @apply text-emerald-700 bg-emerald-50 border-emerald-200;
+}
+
+.pie-card__label--expense {
+  @apply text-red-700 bg-red-50 border-red-200;
+}
+
+.pie-card__hover--income {
+  @apply hover:border-emerald-300;
+}
+
+.pie-card__hover--expense {
+  @apply hover:border-red-300;
+}
+
+.pie-card__canvas-wrap {
+  @apply relative w-full h-[230px] flex justify-center items-center;
+}

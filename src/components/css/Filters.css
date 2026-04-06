@@ -1,0 +1,111 @@
+@reference "tailwindcss";
+
+
+.filters-section {
+  @apply p-5 sm:p-6 my-3 relative overflow-hidden;
+}
+
+
+.filters-header {
+  @apply flex items-center justify-between mb-5;
+}
+
+.filters-header__left {
+  @apply flex items-center gap-2;
+}
+
+
+.filters-header__count-badge {
+  @apply inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-[0.62rem] font-bold;
+}
+
+.filters-header__clear-btn {
+  @apply flex items-center gap-1 text-[0.72rem] font-semibold transition-colors hover:text-danger;
+}
+
+.filters-fields {
+  @apply flex flex-wrap items-end gap-4;
+}
+
+.filters-field-col {
+  @apply flex flex-col;
+}
+
+.filters-field-col--month {
+  @apply flex flex-col min-w-[150px];
+}
+
+.filters-field-col--type {
+  @apply flex flex-col min-w-[150px];
+}
+
+.filters-field-col--category {
+  @apply flex flex-col min-w-[160px];
+}
+
+.filters-field-col--search {
+  @apply flex flex-col flex-1 min-w-[220px];
+}
+
+
+.filter-label {
+  @apply flex items-center gap-1.5 text-[0.68rem] font-bold tracking-[0.14em] uppercase mb-1.5 select-none cursor-pointer;
+}
+
+.select-wrap {
+  @apply relative;
+}
+
+.select-wrap__chevron {
+  @apply absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none;
+}
+
+.search-box {
+  @apply flex items-stretch rounded-xl overflow-hidden border transition-all duration-200;
+}
+
+.search-box--idle {
+  @apply border-border-solid;
+}
+
+.search-box--focused {
+  @apply border-primary;
+}
+
+.search-box__input {
+  @apply flex-1 py-[10px] px-3.5 bg-white text-[0.9rem] font-medium text-text-main outline-none border-none;
+}
+
+
+.search-box__clear-btn {
+  @apply px-3 flex items-center bg-white border-l border-border-solid transition-all duration-150 hover:text-danger hover:bg-red-50;
+}
+
+.search-box__submit-btn {
+  @apply flex items-center gap-1.5 px-4 bg-primary text-white text-[0.8rem] font-semibold transition-all duration-150 whitespace-nowrap hover:bg-primary-hover active:scale-95;
+}
+
+.search-box__submit-label {
+  @apply hidden sm:inline;
+}
+
+.filters-pills {
+  @apply flex flex-wrap gap-2 mt-4 pt-4 border-t border-border;
+}
+
+
+.active-pill {
+  @apply inline-flex items-center gap-1.5 pl-3 pr-2 py-1 rounded-full text-primary text-[0.72rem] font-semibold;
+}
+
+.active-pill__remove-btn {
+  @apply w-4 h-4 flex items-center justify-center rounded-full transition-colors;
+}
+
+.ico-sm {
+  @apply w-4 h-4;
+}
+
+.ico-xs {
+  @apply w-3.5 h-3.5 pointer-events-none;
+}

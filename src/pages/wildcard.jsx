@@ -2,30 +2,26 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Wildcard() {
   const navigate = useNavigate();
-
   return (
-    <div className="flex flex-col items-center justify-center flex-1 gap-6 animate-[fadeInDown_0.6s_ease-out]">
-      
-      <p className="text-8xl font-800 text-text-main opacity-10 select-none leading-none">
-        404
-      </p>
+    <div className="flex flex-col items-center justify-center flex-1 gap-6 py-24 animate-fade-in-down text-center">
+      <div className="relative select-none">
+        <span className="text-[7rem] font-extrabold text-text-main/[0.07] leading-none">404</span>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-4xl font-extrabold text-text-main/20 tracking-widest">404</span>
+        </div>
+      </div>
 
-      <div className="flex flex-col items-center gap-2">
-        <h1 className="text-2xl font-semibold text-text-main tracking-tight">
-          Page Not Found
-        </h1>
-        <p className="text-sm font-300 text-text-main opacity-50 text-center max-w-xs">
+      <div className="flex flex-col items-center gap-2 max-w-xs">
+        <h1 className="text-2xl font-bold text-text-main tracking-tight">Page Not Found</h1>
+        <p className="text-sm text-text-light leading-relaxed">
           The page you're looking for doesn't exist or has been moved.
         </p>
       </div>
 
-      <button
-        onClick={() => navigate('/')}
-        className="mt-2 px-6 py-2.5 text-sm font-500 rounded-lg bg-text-main text-white opacity-80 hover:opacity-100 transition-opacity duration-200"
-      >
-        Back to Home
+      <button onClick={() => navigate('/')}
+        className="btn-primary px-8 py-2.5 text-sm rounded-xl">
+        ← Back to Home
       </button>
-
     </div>
   );
 }

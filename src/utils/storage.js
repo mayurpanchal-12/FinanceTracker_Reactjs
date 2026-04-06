@@ -1,59 +1,90 @@
-const TRANSACTIONS_KEY = 'transactions';
-const BALANCE_KEY = 'balance';
-const FILTERS_KEY = 'filters';
+import {
+  collection,
+  doc,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy,
+  setDoc,
+  getDoc,
+} from 'firebase/firestore';
+import { db } from '../firebase';
 
-export function loadTransactions() {
+// helper — get user's transactions collection ref
+const txCollection = (uid) =>
+  collection(db, 'users', uid, 'transactions');
+
+// helper — get user's filters doc ref
+const filtersDoc = (uid) =>
+  doc(db, 'users', uid, 'meta', 'filters');
+
+// load all transactions for user
+export async function loadTransactions(uid) {
   try {
-    const data = localStorage.getItem(TRANSACTIONS_KEY);
-    return data ? JSON.parse(data) : [];
+    const q = query(txCollection(uid), orderBy('date', 'desc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => ({ firestoreId: doc.id, ...doc.data() }));
   } catch {
     return [];
   }
 }
 
-export function saveTransactions(transactions) {
+// add single transaction
+export async function saveTransaction(uid, transaction) {
   try {
-    localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(transactions));
+    const docRef = await addDoc(txCollection(uid), transaction);
+    return docRef.id;
   } catch (error) {
-    console.error('Error saving transactions to localStorage:', error);
+    console.error('Error saving transaction:', error);
   }
 }
 
-export function loadBalance() {
+// update single transaction
+export async function updateTransaction(uid, firestoreId, data) {
   try {
-    return parseFloat(localStorage.getItem(BALANCE_KEY)) || 0;
-  } catch {
-    return 0;
-  }
-}
-
-export function saveBalance(balance) {
-  try {
-    localStorage.setItem(BALANCE_KEY, String(balance));
+    const ref = doc(db, 'users', uid, 'transactions', firestoreId);
+    await updateDoc(ref, data);
   } catch (error) {
-    console.error('Error saving balance to localStorage:', error);
+    console.error('Error updating transaction:', error);
   }
 }
 
-export function loadFilters() {
+// delete single transaction
+export async function deleteTransaction(uid, firestoreId) {
   try {
-    const data = localStorage.getItem(FILTERS_KEY);
-    const parsed = data ? JSON.parse(data) : {};
-    return {
-      month: parsed.month || '',
-      type: parsed.type || '',
-      category: parsed.category || '',
-      search: parsed.search || '',
-    };
+    const ref = doc(db, 'users', uid, 'transactions', firestoreId);
+    await deleteDoc(ref);
+  } catch (error) {
+    console.error('Error deleting transaction:', error);
+  }
+}
+
+// save filters
+export async function saveFilters(uid, filters) {
+  try {
+    await setDoc(filtersDoc(uid), filters);
+  } catch (error) {
+    console.error('Error saving filters:', error);
+  }
+}
+
+// load filters
+export async function loadFilters(uid) {
+  try {
+    const snap = await getDoc(filtersDoc(uid));
+    if (snap.exists()) {
+      const data = snap.data();
+      return {
+        month: data.month || '',
+        type: data.type || '',
+        category: data.category || '',
+        search: data.search || '',
+      };
+    }
+    return { month: '', type: '', category: '', search: '' };
   } catch {
     return { month: '', type: '', category: '', search: '' };
-  }
-}
-
-export function saveFilters(filters) {
-  try {
-    localStorage.setItem(FILTERS_KEY, JSON.stringify(filters));
-  } catch (error) {
-    console.error('Error saving filters to localStorage:', error);
   }
 }

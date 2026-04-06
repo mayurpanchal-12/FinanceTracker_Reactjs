@@ -1,0 +1,115 @@
+@reference "tailwindcss";
+
+.tx-table-section {
+  @apply rounded-[18px] shadow-md overflow-hidden border border-border-solid mt-3 bg-white;
+}
+
+.tx-table-header {
+  @apply px-5 py-3.5 flex items-center justify-between border-b border-border-solid bg-[#f8fafd];
+}
+
+
+.tx-table-header__count {
+  @apply text-[0.75rem] text-text-light font-medium;
+}
+
+.tx-table-scroll {
+  @apply overflow-x-auto;
+}
+
+.tx-table {
+  @apply w-full border-collapse whitespace-nowrap;
+}
+
+
+.tx-row {
+  @apply transition-colors duration-150 ;
+}
+
+
+
+.tx-cell--index {
+  @apply text-xs font-bold;
+}
+
+
+.tx-cell--date {
+  @apply font-medium tabular-nums;
+}
+
+.tx-cell--amount-income {
+  @apply font-bold tabular-nums text-emerald-600;
+}
+
+.tx-cell--amount-expense {
+  @apply font-bold tabular-nums text-red-500;
+}
+
+.tx-cell--desc {
+  @apply text-left max-w-[200px];
+}
+
+.tx-cell--desc-text {
+  @apply block truncate;
+}
+
+.tx-cell--note-tag {
+  @apply inline-flex items-center gap-1 text-[0.68rem] mt-0.5 text-amber-600 font-semibold;
+}
+
+.type-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[0.7rem] font-bold uppercase tracking-wide;
+}
+
+.type-badge--income {
+  @apply bg-emerald-100 text-emerald-700;
+}
+
+.type-badge--expense {
+  @apply bg-red-100 text-red-600;
+}
+
+.category-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-[0.7rem] font-semibold bg-slate-100 text-text-light;
+}
+
+.tx-cell--balance-positive {
+  @apply font-bold tabular-nums text-emerald-600;
+}
+
+.tx-cell--balance-negative {
+  @apply font-bold tabular-nums text-red-500;
+}
+
+.tx-actions {
+  @apply flex items-center justify-center gap-1.5;
+}
+
+.action-btn {
+  @apply px-3 py-1.5 text-[0.78rem] font-semibold rounded-lg transition-all duration-150;
+}
+
+.action-btn--edit {
+  @apply text-primary hover:bg-primary hover:text-white;
+}
+
+
+.action-btn--danger {
+  @apply bg-red-50 text-red-500 hover:bg-red-500 hover:text-white;
+}
+
+.action-btn--neutral {
+  @apply bg-slate-100 text-text-light hover:bg-slate-200 hover:text-text-main;
+}
+
+.tx-empty {
+  @apply py-14 flex flex-col items-center gap-3 text-text-light;
+}
+
+.tx-empty__icon {
+  @apply text-3xl opacity-30;
+}
+
+.tx-empty__text {
+  @apply text-sm font-medium italic;
+}

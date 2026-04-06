@@ -1,0 +1,125 @@
+@reference "tailwindcss";
+
+
+.form-card {
+  @apply p-6 mb-5 relative overflow-hidden;
+}
+
+.form-header {
+  @apply flex items-center justify-between mb-5;
+}
+
+.form-header__title {
+  @apply text-[1.05rem] font-bold text-text-main tracking-tight;
+}
+
+.form-header__subtitle {
+  @apply text-[0.75rem] text-text-light mt-0.5;
+}
+
+
+.form-header__cancel {
+  @apply text-[0.75rem] font-semibold transition-colors hover:text-danger;
+}
+
+
+.form-grid {
+  @apply grid gap-4 items-start;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+
+.field-wrap {
+  @apply flex flex-col;
+}
+
+.field-wrap__label {
+  @apply block text-[0.7rem] font-bold tracking-[0.12em] uppercase mb-1.5 select-none;
+ 
+}
+
+
+.desc-field-wrap {
+  @apply flex rounded-xl overflow-hidden border transition-all duration-200 border-border-solid;
+}
+
+.desc-field-input {
+  @apply flex-1 py-[10px] px-3.5 bg-white text-[0.9rem] font-medium text-text-main outline-none border-none min-w-0;
+}
+
+.desc-field-mic {
+  @apply px-3 flex items-center justify-center border-l border-border-solid transition-all duration-200;
+}
+
+.desc-field-mic--idle {
+  @apply bg-white text-primary;
+}
+
+
+.desc-field-mic--listening {
+  @apply bg-red-500 text-white animate-pulse;
+}
+
+.select-wrap {
+  @apply relative;
+}
+
+.select-wrap__chevron {
+  @apply absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none;
+}
+
+.category-row {
+  @apply flex gap-2;
+}
+
+.category-row__select-wrap {
+  @apply relative flex-1;
+}
+
+.highlight-btn {
+  @apply px-3 py-2.5 rounded-xl border transition-all duration-200 flex items-center gap-1 font-semibold text-sm;
+}
+
+.highlight-btn--active {
+  @apply bg-amber-500 text-white border-amber-500 shadow-md;
+}
+
+.highlight-btn--idle {
+  @apply bg-white text-text-light border-border-solid hover:border-amber-400 hover:text-amber-500;
+}
+
+.form-actions {
+  @apply flex flex-col gap-2.5 self-end;
+}
+
+.form-actions__row {
+  @apply flex gap-2;
+}
+
+.form-actions__note-btn {
+  @apply flex items-center gap-1.5 flex-1 justify-center text-sm py-[10px];
+}
+
+.form-actions__submit-btn {
+  @apply flex-1 text-sm py-[10px] text-center;
+}
+
+.ico-mic {
+  @apply w-[18px] h-[18px];
+}
+
+.ico-stop {
+  @apply w-[17px] h-[17px];
+}
+
+.ico-note {
+  @apply w-4 h-4;
+}
+
+.ico-star {
+  @apply w-4 h-4;
+}
+
+.ico-chevron {
+  @apply w-3.5 h-3.5 pointer-events-none;
+}

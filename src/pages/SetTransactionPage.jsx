@@ -1,54 +1,53 @@
 import { useEffect } from 'react';
-import Header from '../components/Header';
+
 import TransactionForm from '../components/TransactionForm';
 import { useTransactions } from '../context/TransactionContext';
+import './css/SetTransactionPage.css';
+const fmt = (n) => Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2 });
 
 export default function SetTransactionPage() {
-  const {
-    setEditingId,
-    scheduledTransactions,
-    deleteTransaction,
-    updateTransaction,
-    unhighlightTransaction,
-  } = useTransactions();
+  const { setEditingId, scheduledTransactions, deleteTransaction, updateTransaction, unhighlightTransaction } = useTransactions();
 
-  useEffect(() => {
-    setEditingId(null);
-  }, [setEditingId]);
+  useEffect(() => { setEditingId(null); }, [setEditingId]);
+
+  const TH = ({ children }) => <th className="th">{children}</th>;
+  const TD = ({ children, className = '' }) => <td className={`td ${className}`}>{children}</td>;
 
   return (
     <>
-      <Header />
-      <section className="animate-[fadeIn_0.4s_ease-out]">
-        <p className="bg-indigo-500/10 border-l-4 border-l-primary py-4 px-5 rounded-md text-text-main mb-6 text-base leading-relaxed">
-          Set transactions for <strong>future dates</strong>. They appear in this table until the
-          intended date; on that day they automatically move to the main Tracker and Charts.
-        </p>
+
+      <section className="page-section">
+
+        <div className="info-banner bg-primary/6">
+          <span className="info-banner__icon">ℹ</span>
+          <p>Set transactions for <strong>future dates</strong>. They appear in this table until the intended date; on that day they automatically move to the main Tracker and Charts.</p>
+        </div>
+
         <TransactionForm scheduledPage={true} />
 
-        <div className="bg-surface backdrop-blur-md border border-border rounded-2xl shadow-md p-6 transition-all duration-300 hover:shadow-lg hover:bg-surface-hover">
-          <h2 className="text-2xl font-bold mb-2 text-text-main">📅 Scheduled transactions</h2>
-          <p className="text-text-light mb-4">
-            These will move to the main Tracker on their set date.
-          </p>
-          <div className="overflow-x-auto rounded-2xl shadow-md bg-surface-solid mt-2.5">
-            <table className="w-full border-collapse whitespace-nowrap">
+        <div className="scheduled-card">
+          <div className="scheduled-card__header">
+            <h2 className="scheduled-card__title">Scheduled Transactions</h2>
+            <p className="scheduled-card__subtitle">These will move to the main Tracker on their set date.</p>
+          </div>
+
+          <div className="scheduled-card__table-wrapper">
+            <table className="scheduled-table">
               <thead>
                 <tr>
-                  <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">#</th>
-                  <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">Date</th>
-                  <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">Amount</th>
-                  <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">Description</th>
-                  <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">Type</th>
-                  <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">Category</th>
-                  <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">Action</th>
+                  {['#', 'Scheduled Date', 'Amount (₹)', 'Description', 'Type', 'Category', 'Actions'].map((h) => (
+                    <TH key={h}>{h}</TH>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="[&>tr:last-child>td]:border-b-0">
+              <tbody>
                 {scheduledTransactions.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-4 text-center border-b border-border-solid italic text-text-light">
-                      No scheduled transactions
+                    <td colSpan={7}>
+                      <div className="empty-state">
+                        <span className="empty-state__icon">◈</span>
+                        <p className="empty-state__text">No scheduled transactions</p>
+                      </div>
                     </td>
                   </tr>
                 ) : (
@@ -57,39 +56,39 @@ export default function SetTransactionPage() {
                     .map((tx, index) => (
                       <tr
                         key={tx.id}
-                        className={`transition-all duration-300 hover:bg-[#f8fafc] ${tx.highlighted ? 'bg-amber-500/5 border-l-4 border-l-warning hover:bg-amber-500/10' : ''}`}
+                        className={`table-row hover:bg-primary/3 ${tx.highlighted ? 'table-row--highlighted bg-amber-500/4 ' : ''}`}
                       >
-                        <td className="p-4 text-center border-b border-border-solid">{index + 1}</td>
-                        <td className="p-4 text-center border-b border-border-solid">{tx.scheduledDate || tx.date}</td>
-                        <td className="p-4 text-center border-b border-border-solid">{tx.amount}</td>
-                        <td className="p-4 text-center border-b border-border-solid">{tx.info}</td>
-                        <td className="p-4 text-center border-b border-border-solid">{tx.type}</td>
-                        <td className="p-4 text-center border-b border-border-solid">{tx.category}</td>
-                        <td className="p-4 text-center border-b border-border-solid flex justify-center gap-2">
-                          <button
-                            type="button"
-                            className="bg-red-500/10 text-danger shadow-none px-3 py-1.5 text-[0.85rem] rounded-md transition-all duration-300 hover:bg-danger hover:text-white hover:-translate-y-[1px]"
-                            onClick={() => deleteTransaction(tx.id)}
-                          >
-                            Delete
-                          </button>
-                          <button
-                            type="button"
-                            className="bg-red-500/10 text-danger shadow-none px-3 py-1.5 text-[0.85rem] rounded-md transition-all duration-300 hover:bg-danger hover:text-white hover:-translate-y-[1px]"
-                            onClick={() => setEditingId(tx.id)}
-                          >
-                            Edit
-                          </button>
-                          {tx.highlighted && (
-                            <button
-                              type="button"
-                              className="bg-slate-500/10 text-text-light border border-transparent shadow-none px-3 py-1.5 text-[0.85rem] rounded-md transition-all duration-300 hover:bg-slate-500/20 hover:text-text-main"
-                              onClick={() => unhighlightTransaction(tx.id)}
-                            >
-                              Unhighlight
+                        <TD className="td--index">{index + 1}</TD>
+                        <TD className="td--date">{tx.scheduledDate || tx.date}</TD>
+                        <TD className={tx.type === 'income' ? 'td--amount-income' : 'td--amount-expense'}>
+                          {tx.type === 'income' ? '+' : '-'}₹{fmt(tx.amount)}
+                        </TD>
+                        <TD className="td--description">
+                          <span className="td--description-text" title={tx.info}>{tx.info}</span>
+                        </TD>
+                        <TD>
+                          <span className={`badge-type ${tx.type === 'income' ? 'badge-type--income' : 'badge-type--expense'}`}>
+                            {tx.type}
+                          </span>
+                        </TD>
+                        <TD>
+                          <span className="badge-category">{tx.category}</span>
+                        </TD>
+                        <TD>
+                          <div className="actions-cell">
+                            <button className="btn-edit bg-primary/8 " onClick={() => setEditingId(tx.id)}>
+                              Edit
                             </button>
-                          )}
-                        </td>
+                            <button className="btn-delete" onClick={() => deleteTransaction(tx.id)}>
+                              Delete
+                            </button>
+                            {tx.highlighted && (
+                              <button className="btn-unstar" onClick={() => unhighlightTransaction(tx.id)}>
+                                Unstar
+                              </button>
+                            )}
+                          </div>
+                        </TD>
                       </tr>
                     ))
                 )}
@@ -97,6 +96,7 @@ export default function SetTransactionPage() {
             </table>
           </div>
         </div>
+
       </section>
     </>
   );

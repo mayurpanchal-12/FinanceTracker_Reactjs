@@ -1,0 +1,112 @@
+@reference "tailwindcss";
+
+/* ── Summary Strip ── */
+.budget-summary-strip {
+  @apply flex flex-wrap items-center gap-0 px-6 py-4 my-3;
+}
+
+.budget-summary-item {
+  @apply flex flex-col gap-0.5 px-5 py-1;
+}
+
+.budget-summary-value {
+  @apply text-xl font-extrabold tracking-tight;
+}
+
+.budget-summary-divider {
+  @apply w-px h-10 bg-border-solid mx-1;
+}
+
+/* ── List ── */
+.budget-list {
+  @apply divide-y divide-border;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.budget-row {
+  @apply flex flex-wrap items-center gap-4 px-6 py-4 transition-colors duration-150 ;
+}
+
+.budget-row--over {
+  @apply bg-red-50/60;
+}
+
+.budget-row--near {
+  @apply bg-amber-50/50;
+}
+
+/* ── Row sections ── */
+.budget-row__left {
+  @apply flex items-center gap-3 min-w-[160px] w-[200px];
+}
+
+.budget-row__progress {
+  @apply flex flex-col gap-1.5 flex-1 min-w-[180px];
+}
+
+.budget-row__actions {
+  @apply flex items-center gap-2 shrink-0;
+}
+
+/* ── Category ── */
+.budget-cat-icon {
+  @apply text-2xl shrink-0;
+}
+
+.budget-cat-name {
+  @apply text-sm font-bold text-text-main;
+}
+
+.budget-cat-spent {
+  @apply text-xs font-medium mt-0.5;
+}
+
+/* ── Progress bar ── */
+.budget-bar-track {
+  @apply w-full h-2 rounded-full bg-gray-100 overflow-hidden;
+}
+
+.budget-bar-fill {
+  @apply h-full rounded-full transition-all duration-500;
+}
+
+/* ── Status badge ── */
+.budget-badge {
+  @apply text-[0.68rem] font-bold px-2 py-0.5 rounded-full w-fit;
+}
+
+.budget-badge--over {
+  @apply bg-red-100 text-red-600;
+}
+
+.budget-badge--near {
+  @apply bg-amber-100 text-amber-700;
+}
+
+.budget-badge--ok {
+  @apply bg-emerald-100 text-emerald-700;
+}
+
+/* ── Edit inline ── */
+.budget-edit-inline {
+  @apply flex items-center gap-2;
+}
+
+.budget-edit-input {
+  @apply w-28 py-1.5 px-3 text-sm;
+}
+
+/* ── Action buttons ── */
+.budget-action-btn {
+  @apply text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-150 border;
+}
+
+.budget-action-btn--edit {
+  @apply border-primary/30 text-primary  ;
+}
+
+.budget-action-btn--remove {
+  @apply border-red-200 text-red-400 bg-red-50 hover:bg-red-100 hover:text-red-600;
+}

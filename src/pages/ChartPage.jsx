@@ -1,166 +1,132 @@
-
 import { useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import Header from '../components/Header';
+
 import { useTransactions } from '../context/TransactionContext';
 import { aggregateMonthlyData } from '../utils/chartData';
 import { applyFilters } from '../utils/filterUtils';
+import './css/ChartPage.css';
+import { SkeletonChart } from '../components/Skeleton';
 
 export default function ChartPage() {
   const [searchParams] = useSearchParams();
-  const { mainTransactions } = useTransactions();
-  const lineChartRef = useRef(null);
-  const incomeChartRef = useRef(null);
+  const { mainTransactions ,loading } = useTransactions();
+  const lineChartRef    = useRef(null);
+  const incomeChartRef  = useRef(null);
   const expenseChartRef = useRef(null);
-  const lineInstance = useRef(null);
-  const incomeInstance = useRef(null);
+  const lineInstance    = useRef(null);
+  const incomeInstance  = useRef(null);
   const expenseInstance = useRef(null);
 
-  const month = searchParams.get('month') || '';
-  const type = searchParams.get('type') || '';
+  const month    = searchParams.get('month')    || '';
+  const type     = searchParams.get('type')     || '';
   const category = searchParams.get('category') || '';
-  const filters = { month, type, category };
+  const filters  = { month, type, category };
   const pieTransactions = applyFilters(mainTransactions, filters);
-  const lineData = aggregateMonthlyData(mainTransactions);
+  const lineData        = aggregateMonthlyData(mainTransactions);
 
   useEffect(() => {
     if (!lineChartRef.current || !lineData.labels.length) return;
-    let chartInstance = null;
     import('chart.js/auto').then(({ default: Chart }) => {
       if (!lineChartRef.current) return;
       if (lineInstance.current) lineInstance.current.destroy();
-      chartInstance = new Chart(lineChartRef.current, {
+      lineInstance.current = new Chart(lineChartRef.current, {
         type: 'line',
         data: {
           labels: lineData.labels,
           datasets: [
-            { label: 'Income', data: lineData.incomeData, borderColor: '#16a34a', backgroundColor: 'rgba(22,163,52,0.1)', fill: true, tension: 0.3 },
-            { label: 'Expense', data: lineData.expenseData, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.1)', fill: true, tension: 0.3 },
-            { label: 'Overall Balance', data: lineData.balanceData, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', fill: true, tension: 0.3 },
+            { label: 'Income',  data: lineData.incomeData,  borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.08)',  fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#16a34a' },
+            { label: 'Expense', data: lineData.expenseData, borderColor: '#e53e3e', backgroundColor: 'rgba(229,62,62,0.08)',  fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#e53e3e' },
+            { label: 'Balance', data: lineData.balanceData, borderColor: '#4f63d2', backgroundColor: 'rgba(79,99,210,0.08)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#4f63d2' },
           ],
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: true }, tooltip: { callbacks: { label: (ctx) => `₹${ctx.raw}` } } },
-          scales: { y: { ticks: { callback: (v) => `₹${v}` } } },
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'top', labels: { font: { family: 'Outfit', size: 12, weight: '600' }, boxWidth: 12, padding: 16 } },
+            tooltip: { callbacks: { label: (c) => ` ₹${Number(c.raw).toLocaleString('en-IN')}` }, bodyFont: { family: 'Outfit' }, titleFont: { family: 'Outfit' } },
+          },
+          scales: {
+            x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { family: 'Outfit', size: 11 } } },
+            y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: (v) => `₹${Number(v).toLocaleString('en-IN')}`, font: { family: 'Outfit', size: 11 } } },
+          },
         },
       });
-      lineInstance.current = chartInstance;
     });
     return () => { if (lineInstance.current) lineInstance.current.destroy(); lineInstance.current = null; };
   }, [mainTransactions]);
 
-  useEffect(() => {
-    if (!incomeChartRef.current) return;
-    const incomeData = pieTransactions.filter((t) => t.type === 'income');
-    const dataByCat = {};
-    let total = 0;
-    incomeData.forEach((tx) => {
-      const cat = tx.category || 'Other';
-      dataByCat[cat] = (dataByCat[cat] || 0) + Number(tx.amount);
-      total += Number(tx.amount);
-    });
-    const totalEl = document.getElementById('totalIncome');
-    if (totalEl) totalEl.textContent = month ? `Total Income for ${month}: ₹${total}` : `Total Income: ₹${total}`;
-    if (incomeInstance.current) incomeInstance.current.destroy();
-    incomeInstance.current = null;
-    if (Object.keys(dataByCat).length === 0) {
-      incomeChartRef.current.style.display = 'none';
-      return;
-    }
-    incomeChartRef.current.style.display = 'block';
+  const buildPie = (ref, instanceRef, txType, totalId, colors) => {
+    if (!ref.current) return;
+    const txs = pieTransactions.filter((t) => t.type === txType);
+    const byCat = {}; let total = 0;
+    txs.forEach((tx) => { const c = tx.category || 'Other'; byCat[c] = (byCat[c] || 0) + Number(tx.amount); total += Number(tx.amount); });
+    const el = document.getElementById(totalId);
+    if (el) el.textContent = month
+      ? `Total ${txType === 'income' ? 'Income' : 'Expense'} — ${month}: ₹${total.toLocaleString('en-IN')}`
+      : `Total ${txType === 'income' ? 'Income' : 'Expense'}: ₹${total.toLocaleString('en-IN')}`;
+    if (instanceRef.current) instanceRef.current.destroy(); instanceRef.current = null;
+    if (!Object.keys(byCat).length) { ref.current.style.display = 'none'; return; }
+    ref.current.style.display = 'block';
     import('chart.js/auto').then(({ default: Chart }) => {
-      if (!incomeChartRef.current) return;
-      incomeInstance.current = new Chart(incomeChartRef.current, {
-        type: 'pie',
+      if (!ref.current) return;
+      instanceRef.current = new Chart(ref.current, {
+        type: 'doughnut',
         data: {
-          labels: Object.keys(dataByCat),
-          datasets: [{ data: Object.values(dataByCat), backgroundColor: ['#16a34a', '#22c55e', '#4ade80', '#86efac', '#d1fae5'] }],
+          labels: Object.keys(byCat),
+          datasets: [{ data: Object.values(byCat), backgroundColor: colors, borderWidth: 2, borderColor: '#fff', hoverOffset: 6 }],
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } },
+        options: {
+          responsive: true, maintainAspectRatio: false, cutout: '62%',
+          plugins: {
+            legend: { position: 'bottom', labels: { font: { family: 'Outfit', size: 11, weight: '600' }, boxWidth: 10, padding: 12 } },
+            tooltip: { callbacks: { label: (c) => ` ₹${Number(c.raw).toLocaleString('en-IN')}` }, bodyFont: { family: 'Outfit' } },
+          },
+        },
       });
     });
-    return () => { if (incomeInstance.current) incomeInstance.current.destroy(); incomeInstance.current = null; };
-  }, [pieTransactions, month]);
+    return () => { if (instanceRef.current) instanceRef.current.destroy(); instanceRef.current = null; };
+  };
 
-  useEffect(() => {
-    if (!expenseChartRef.current) return;
-    const expenseData = pieTransactions.filter((t) => t.type === 'expense');
-    const dataByCat = {};
-    let total = 0;
-    expenseData.forEach((tx) => {
-      const cat = tx.category || 'Other';
-      dataByCat[cat] = (dataByCat[cat] || 0) + Number(tx.amount);
-      total += Number(tx.amount);
-    });
-    const totalEl = document.getElementById('totalExpense');
-    if (totalEl) totalEl.textContent = month ? `Total Expense for ${month}: ₹${total}` : `Total Expense: ₹${total}`;
-    if (expenseInstance.current) expenseInstance.current.destroy();
-    expenseInstance.current = null;
-    if (Object.keys(dataByCat).length === 0) {
-      expenseChartRef.current.style.display = 'none';
-      return;
-    }
-    expenseChartRef.current.style.display = 'block';
-    import('chart.js/auto').then(({ default: Chart }) => {
-      if (!expenseChartRef.current) return;
-      expenseInstance.current = new Chart(expenseChartRef.current, {
-        type: 'pie',
-        data: {
-          labels: Object.keys(dataByCat),
-          datasets: [{ data: Object.values(dataByCat), backgroundColor: ['#dc2626', '#ef4444', '#f87171', '#fca5a5', '#fee2e2'] }],
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } },
-      });
-    });
-    return () => { if (expenseInstance.current) expenseInstance.current.destroy(); expenseInstance.current = null; };
-  }, [pieTransactions, month]);
+  useEffect(() => buildPie(incomeChartRef,  incomeInstance,  'income',  'totalIncome',
+    ['#16a34a','#22c55e','#4ade80','#86efac','#bbf7d0','#34d399']), [pieTransactions, month]);
+  useEffect(() => buildPie(expenseChartRef, expenseInstance, 'expense', 'totalExpense',
+    ['#e53e3e','#f87171','#fca5a5','#dc2626','#ef4444','#fecaca']), [pieTransactions, month]);
 
+  const pieCards = [
+    { id: 'totalIncome',  ref: incomeChartRef,  chartId: 'incomeChart',  variant: 'income'  },
+    { id: 'totalExpense', ref: expenseChartRef, chartId: 'expenseChart', variant: 'expense' },
+  ];
+
+    if (loading) return <div className="p-4 flex flex-col gap-4"><SkeletonChart/>
+     <SkeletonChart/>
+    </div>;
   return (
-    <div className="flex flex-col gap-8 animate-[fadeInDown_0.4s_ease-out] pb-10">
-      <Header />
-      
-      <section className="bg-surface backdrop-blur-md border border-border rounded-2xl shadow-md p-6 sm:p-8 transition-all duration-300 hover:shadow-lg">
-        <h2 className="text-[1.2rem] font-bold text-text-main mb-6 flex items-center gap-2">
-          📈 Overall Balance Analysis
-        </h2>
-        <div className="relative w-full h-[320px] flex justify-center items-center bg-surface-solid border border-border-solid rounded-xl p-4 shadow-sm">
-          <canvas ref={lineChartRef} id="balanceChart" />
+    <div className="chart-page animate-fade-in-down">
+
+
+      {/* Line Chart */}
+     
+      <section className="card chart-section">
+        <h2 className="chart-section__title">Balance Analysis</h2>
+        <div className="chart-section__canvas-wrap">
+          <canvas ref={lineChartRef} />
         </div>
       </section>
 
-      <section className="bg-surface backdrop-blur-md border border-border rounded-2xl shadow-md p-6 sm:p-8 transition-all duration-300 hover:shadow-lg">
-        <h2 className="text-[1.2rem] font-bold text-text-main mb-8 flex items-center gap-2">
-          📊 Income & Expense by Category
-        </h2>
-        <div className="flex flex-wrap md:flex-nowrap gap-8 justify-center items-stretch">
-          
-          {/* Income Pie Chart Container */}
-          <div className="flex-1 min-w-[280px] max-w-[500px] flex flex-col items-center gap-5 bg-surface-solid border border-border-solid rounded-xl p-6 shadow-sm transition-all duration-300 hover:border-green-300 hover:shadow-md">
-            <p id="totalIncome" className="text-[1.05rem] font-semibold text-green-700 bg-green-500/10 px-4 py-2.5 rounded-lg w-full text-center shadow-[inset_0_1px_4px_rgba(34,197,94,0.1)]">
-              Total Income: ₹0
-            </p>
-            <div className="relative w-full h-[250px] flex justify-center items-center">
-              <canvas ref={incomeChartRef} id="incomeChart" />
+      {/* Pie Charts */}
+      <section className="card pie-section">
+        <h2 className="pie-section__title">Income & Expense by Category</h2>
+        <div className="pie-section__grid">
+          {pieCards.map(({ id, ref, chartId, variant }) => (
+            <div key={id} className={`pie-card pie-card__hover--${variant}`}>
+              <p id={id} className={`pie-card__label pie-card__label--${variant}`}>Loading…</p>
+              <div className="pie-card__canvas-wrap">
+                <canvas ref={ref} id={chartId} />
+              </div>
             </div>
-          </div>
-
-          {/* Expense Pie Chart Container */}
-          <div className="flex-1 min-w-[280px] max-w-[500px] flex flex-col items-center gap-5 bg-surface-solid border border-border-solid rounded-xl p-6 shadow-sm transition-all duration-300 hover:border-red-300 hover:shadow-md">
-            <p id="totalExpense" className="text-[1.05rem] font-semibold text-red-700 bg-red-500/10 px-4 py-2.5 rounded-lg w-full text-center shadow-[inset_0_1px_4px_rgba(239,68,68,0.1)]">
-              Total Expense: ₹0
-            </p>
-            <div className="relative w-full h-[250px] flex justify-center items-center">
-              <canvas ref={expenseChartRef} id="expenseChart" />
-            </div>
-          </div>
-          
+          ))}
         </div>
       </section>
     </div>
   );
 }
-
-
-

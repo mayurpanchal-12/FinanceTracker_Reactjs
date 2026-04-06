@@ -1,123 +1,133 @@
 import { useTransactions } from '../context/TransactionContext';
+import './css/TransactionTable.css';
+import { useAuth } from '../context/AuthContext';
+
+const fmt = (n) => Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+const TypeBadge = ({ type }) => (
+  <span className={`type-badge ${type === 'income' ? 'type-badge--income' : 'type-badge--expense'}`}>
+    {type}
+  </span>
+);
+
+const ActionBtn = ({ label, variant = 'danger', onClick }) => (
+  <button type="button" onClick={onClick}
+    className={`action-btn ${
+      variant === 'edit'    ? 'action-btn--edit bg-primary/8' :
+      variant === 'neutral' ? 'action-btn--neutral' :
+                              'action-btn--danger'
+    }`}>
+    {label}
+  </button>
+);
 
 export default function TransactionTable() {
-  const {
-    filteredTransactions,
-    filters,
-    deleteTransaction,
-    setEditingId,
-    unhighlightTransaction,
-    summary,
-  } = useTransactions();
+  console.log("table rendered");
+  
+  const { filteredTransactions, filters, deleteTransaction, setEditingId, unhighlightTransaction, summary } = useTransactions();
+  const { role } = useAuth(); 
 
-  const hasActiveFilters = filters.month || filters.type || filters.category;
   const hasActiveSearch = filters.search && String(filters.search).trim() !== '';
-
   const overallBalance = Number(summary?.balance ?? 0);
   const shouldAutoHighlight = filteredTransactions.length >= 10 && overallBalance !== 0;
 
-  const pickTopIds = (type, count) => {
-    return filteredTransactions
-      .filter((t) => t.type === type)
-      .slice()
+  const pickTopIds = (type, count) =>
+    filteredTransactions.filter((t) => t.type === type).slice()
       .sort((a, b) => {
-        const diff = Number(b.amount) - Number(a.amount);
-        if (diff !== 0) return diff;
-        // tie-breaker: most recent date first, then id
-        const dateDiff = String(b.date).localeCompare(String(a.date));
-        if (dateDiff !== 0) return dateDiff;
-        return Number(b.id) - Number(a.id);
-      })
-      .slice(0, count)
-      .map((t) => t.id);
+        const d = Number(b.amount) - Number(a.amount);
+        if (d !== 0) return d;
+        const dd = String(b.date).localeCompare(String(a.date));
+        return dd !== 0 ? dd : Number(b.id) - Number(a.id);
+      }).slice(0, count).map((t) => t.id);
+
+  const autoIncomeIds  = shouldAutoHighlight && overallBalance > 0 ? new Set(pickTopIds('income', 2)) : new Set();
+  const autoExpenseIds = shouldAutoHighlight && overallBalance < 0 ? new Set(pickTopIds('expense', 2)) : new Set();
+
+  const rowBg = (tx) => {
+    if (autoIncomeIds.has(tx.id))  return 'bg-emerald-500/4 border-l-2 border-l-emerald-400';
+    if (autoExpenseIds.has(tx.id)) return 'bg-red-500/4 border-l-2 border-l-red-400';
+    if (tx.highlighted)            return 'bg-amber-500/4 border-l-2 border-l-amber-400';
+    if (hasActiveSearch)           return 'bg-primary/3 border-l-2 border-l-primary/40';
+    return '';
   };
 
-  const autoIncomeIds =
-    shouldAutoHighlight && overallBalance > 0 ? new Set(pickTopIds('income', 2)) : new Set();
-  const autoExpenseIds =
-    shouldAutoHighlight && overallBalance < 0 ? new Set(pickTopIds('expense', 2)) : new Set();
-
   return (
-    <section className="overflow-x-auto rounded-2xl shadow-md bg-surface-solid mt-2.5">
-      <table className="w-full border-collapse whitespace-nowrap">
-        <thead>
-          <tr>
-            <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">#</th>
-            <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">Date</th>
-            <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">Amount</th>
-            <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">Description</th>
-            <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">Type</th>
-            <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">Category</th>
-            <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">Action</th>
-            <th className="p-4 text-center border-b border-border-solid bg-[#f8fafc] text-text-light font-semibold uppercase text-[0.85rem] tracking-wider sticky top-0 z-10">Balance</th>
-          </tr>
-        </thead>
-        <tbody id="tbody" className="[&>tr:last-child>td]:border-b-0">
-          {filteredTransactions.length === 0 ? (
-            <tr>
-              <td colSpan={8} className="p-4 text-center border-b border-border-solid italic text-text-light">
-                No transactions match the current filters
-              </td>
-            </tr>
-          ) : (
-            filteredTransactions.map((tx, index) => {
-              const bgClass =
-                autoIncomeIds.has(tx.id) ? 'bg-emerald-500/5 border-l-4 border-l-success hover:bg-emerald-500/10' :
-                autoExpenseIds.has(tx.id) ? 'bg-red-500/5 border-l-4 border-l-danger hover:bg-red-500/10' :
-                tx.highlighted ? 'bg-amber-500/5 border-l-4 border-l-warning hover:bg-amber-500/10' :
-                hasActiveSearch ? 'bg-indigo-500/5 border-l-4 border-l-primary hover:bg-indigo-500/10' :
-                '';
+    <section className="tx-table-section">
+      <div className="tx-table-header">
+        <span className="section-label">Transactions</span>
+        <span className="tx-table-header__count">
+          {filteredTransactions.length} record{filteredTransactions.length !== 1 ? 's' : ''}
+        </span>
+      </div>
 
-              return (
-                <tr
-                  key={tx.id}
-                  className={`transition-all duration-300 hover:bg-[#f8fafc] ${bgClass}`}
-                >
-                  <td className="p-4 text-center border-b border-border-solid">{index + 1}</td>
-                  <td className="p-4 text-center border-b border-border-solid">{tx.date}</td>
-                  <td className="p-4 text-center border-b border-border-solid">{tx.amount}</td>
-                  <td className="p-4 text-center border-b border-border-solid">
-                    {tx.info}
+      <div className="tx-table-scroll">
+        <table className="tx-table">
+          <thead>
+            <tr>
+              {['#', 'Date', 'Amount (₹)', 'Description', 'Type', 'Category', 'Balance (₹)', 'Actions'].map((h) => (
+                <th key={h} className="th">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filteredTransactions.length === 0 ? (
+              <tr>
+                <td colSpan={8}>
+                  <div className="tx-empty">
+                    <span className="tx-empty__icon">◎</span>
+                    <p className="tx-empty__text">No transactions match the current filters</p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              filteredTransactions.map((tx, index) => (
+                <tr key={tx.id || tx.firestoreId || index} className={`tx-row hover:bg-primary/3 ${rowBg(tx)} group`}>
+                  <td className="td tx-cell--index text-text-light/60">{index + 1}</td>
+                  <td className="td tx-cell--date">{tx.date}</td>
+                  <td className={`td ${tx.type === 'income' ? 'tx-cell--amount-income' : 'tx-cell--amount-expense'}`}>
+                    {tx.type === 'income' ? '+' : '-'}₹{fmt(tx.amount)}
+                  </td>
+                  <td className="td tx-cell--desc">
+                    <span className="tx-cell--desc-text" title={tx.info}>{tx.info}</span>
                     {tx.note && String(tx.note).trim() && (
-                      <span className="inline-flex items-center justify-center text-[0.8rem] ml-2 py-1 px-2 rounded-full bg-amber-500/10 text-warning font-semibold" title="This transaction has a note">
-                        ✏️
-                      </span>
+                      <span title={tx.note} className="tx-cell--note-tag">✎ note</span>
                     )}
                   </td>
-                  <td className="p-4 text-center border-b border-border-solid">{tx.type}</td>
-                  <td className="p-4 text-center border-b border-border-solid">{tx.category}</td>
-                  <td className="p-4 text-center border-b border-border-solid flex justify-center gap-2">
-                    <button
-                      type="button"
-                      className="bg-red-500/10 text-danger shadow-none px-3 py-1.5 text-[0.85rem] rounded-md transition-all duration-300 hover:bg-danger hover:text-white hover:-translate-y-[1px]"
-                      onClick={() => deleteTransaction(tx.id)}
-                    >
-                      Delete
-                    </button>
-                    <button
-                      type="button"
-                      className="bg-red-500/10 text-danger shadow-none px-3 py-1.5 text-[0.85rem] rounded-md transition-all duration-300 hover:bg-danger hover:text-white hover:-translate-y-[1px]"
-                      onClick={() => setEditingId(tx.id)}
-                    >
-                      Edit
-                    </button>
-                    {tx.highlighted && (
-                      <button
-                        type="button"
-                        className="bg-slate-500/10 text-text-light border border-transparent shadow-none px-3 py-1.5 text-[0.85rem] rounded-md transition-all duration-300 hover:bg-slate-500/20 hover:text-text-main"
-                        onClick={() => unhighlightTransaction(tx.id)}
-                      >
-                        Unhighlight
-                      </button>
+                  <td className="td"><TypeBadge type={tx.type} /></td>
+                  <td className="td">
+                    <span className="category-badge">{tx.category}</span>
+                  </td>
+                  <td className={`td ${Number(tx.balance) >= 0 ? 'tx-cell--balance-positive' : 'tx-cell--balance-negative'}`}>
+                    ₹{fmt(tx.balance)}
+                  </td>
+                  <td className="td">
+                    {role === 'admin' ? (
+                      <div className="tx-actions">
+                        <ActionBtn label="Edit" variant="edit" onClick={() =>{ setEditingId(tx.id);
+                          console.log("edit clicked for transaction id:", tx.id);
+                        }  
+                        } />
+                        <ActionBtn label="Delete" variant="danger" onClick={() => {deleteTransaction(tx.id)
+                          console.log("clicked delete");
+                          
+                        }} />
+                        {tx.highlighted && (
+                          <ActionBtn label="Unstar" variant="neutral" onClick={() => {unhighlightTransaction(tx.id);
+                            console.log("clicked unstar");
+                            
+                          } }/>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-text-light/50 italic">view only</span>
                     )}
                   </td>
-                  <td className="p-4 text-center border-b border-border-solid">{tx.balance}</td>
                 </tr>
-              );
-            })
-          )}
-        </tbody>
-      </table>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }
