@@ -10,6 +10,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './components/DashboardLayout';
 import './App.css';
 import Wildcard from './pages/wildcard';
+import About from './pages/about';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const ChartPage = lazy(() => import('./pages/ChartPage'));
@@ -20,6 +21,7 @@ const LoginPage = lazy(() => import('./pages/LoginPage'));
 const InsightsPage = lazy(() => import('./pages/InsightsPage'));
 const ManageViewersPage = lazy(() => import('./pages/ManageViewersPage'));
 const BudgetPage = lazy(() => import('./pages/BudgetPage'));
+const VaultPage = lazy(() => import('./pages/VaultPage'));
 
 
 const withEB = (element) => (
@@ -84,11 +86,20 @@ const router = createBrowserRouter([
         element: withEB(<NotesPage />),
       },
       {
+     path: 'vault',
+    element: withEB(<VaultPage />),
+     },
+      {
         path: 'news',
         element: withEB(<NewsPage />),
         loader: newsLoader,
         errorElement: <NewsErrorPage />,
       },
+      {
+        path: 'about',
+        element:withEB(<About />),
+  
+      }
     ],
   },
   {

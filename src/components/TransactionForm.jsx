@@ -29,6 +29,13 @@ export default function TransactionForm({ scheduledPage = false }) {
     clearForm,
     handleSubmit,
     handleMicClick,
+    // receipt
+    receiptFile,
+    receiptPreview,
+    uploadingReceipt,
+    receiptInputRef,
+    handleReceiptChange,
+    removeReceipt,
   } = useFormState(scheduledPage);
 
   return (
@@ -101,16 +108,66 @@ export default function TransactionForm({ scheduledPage = false }) {
               </select>
               <span className="select-wrap__chevron text-text-light/50"><ChevronIco /></span>
             </div>
-            <button type="button" onClick={() =>{ setHighlight((a) => !a)
-              console.log("highlight");
-              
-            }}
+            <button type="button" onClick={() => setHighlight((a) => !a)}
               title={highlightActive ? 'Remove highlight' : 'Highlight transaction'}
               className={`highlight-btn ${highlightActive ? 'highlight-btn--active shadow-amber-500/25' : 'highlight-btn--idle'}`}>
               <StarIco filled={highlightActive} />
             </button>
           </div>
         </FieldWrap>
+
+        {/* ── Receipt upload — only on add mode ── */}
+        {!isEditMode && (
+          <div className="flex flex-col gap-2">
+
+            {/* hidden file input */}
+            <input
+              ref={receiptInputRef}
+              type="file"
+              accept="image/*,.pdf"
+              className="hidden"
+              onChange={handleReceiptChange}
+            />
+
+            {/* show preview if file selected */}
+            {receiptPreview ? (
+              <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-primary/30 bg-primary/5">
+                {receiptFile?.type?.startsWith('image/') ? (
+                  <img
+                    src={receiptPreview}
+                    alt="receipt"
+                    className="w-10 h-10 rounded-lg object-cover border border-gray-200"
+                  />
+                ) : (
+                  <span className="text-2xl">📄</span>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-text-main truncate">{receiptFile?.name}</p>
+                  <p className="text-[10px] text-text-light">
+                    {receiptFile ? `${(receiptFile.size / 1024).toFixed(1)} KB` : ''}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={removeReceipt}
+                  className="text-xs text-red-400 hover:text-red-600 font-semibold transition-colors px-2 py-1 rounded-lg hover:bg-red-50"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              /* attach button */
+              <button
+                type="button"
+                onClick={() => receiptInputRef.current?.click()}
+                className="btn-ghost flex items-center gap-2 text-xs font-semibold w-fit px-4 py-2"
+              >
+                <span>📎</span>
+                Attach Receipt
+              </button>
+            )}
+          </div>
+        )}
 
         <div className="form-actions">
           <div className="form-actions__row">
@@ -119,8 +176,12 @@ export default function TransactionForm({ scheduledPage = false }) {
               <NoteIco />
               {noteVisible ? 'Hide note' : 'Add note'}
             </button>
-            <button type="submit" className="btn-primary form-actions__submit-btn">
-              {isEditMode ? '✓ Update' : '+ Add'}
+            <button
+              type="submit"
+              disabled={uploadingReceipt}
+              className="btn-primary form-actions__submit-btn disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {uploadingReceipt ? '⏳ Uploading...' : isEditMode ? '✓ Update' : '+ Add'}
             </button>
           </div>
           {noteVisible && (
