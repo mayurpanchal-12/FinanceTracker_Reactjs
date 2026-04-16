@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+
 export default defineConfig({
-   build: {
+  build: {
     rollupOptions: {
       output: {
         manualChunks: {
@@ -12,8 +13,9 @@ export default defineConfig({
       }
     }
   },
-  plugins: [react(),
-     VitePWA({
+  plugins: [
+    react(),
+    VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.png', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
@@ -46,6 +48,8 @@ export default defineConfig({
         ],
       },
       workbox: {
+        clientsClaim: true,   
+        skipWaiting: true,    
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [
           {
@@ -80,7 +84,3 @@ export default defineConfig({
     }),
   ],
 })
-
-
-
-

@@ -6,6 +6,13 @@ export default function PWA() {
   const [installed, setInstalled] = useState(false);
 
   useEffect(() => {
+  console.log("PWA mounted");
+  console.log("standalone:", window.matchMedia("(display-mode: standalone)").matches);
+  console.log("prompt:", window.__installPromptEvent);
+  console.log("visible:", visible);
+}, []);
+
+  useEffect(() => {
     // Already installed as standalone
     if (window.matchMedia("(display-mode: standalone)").matches) return;
 
