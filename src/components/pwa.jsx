@@ -1,52 +1,54 @@
+
+
 import { Fragment, useState, useEffect } from "react";
 
 export default function PWA() {
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [visible, setVisible] = useState(false);
-
+  const [installed, setInstalled] = useState(false);
+  console.log("pwa open ");
   useEffect(() => {
-    console.log("PWA mounted");
-    console.log("standalone:", window.matchMedia("(display-mode: standalone)").matches);
-    console.log("prompt:", window.__installPromptEvent);
-
+  console.log("PWA mounted");
+  console.log("standalone:", window.matchMedia("(display-mode: standalone)").matches);
+  console.log("prompt:", window.__installPromptEvent);
+}, []);
+  
+  useEffect(() => {
+    // Already installed
     if (window.matchMedia("(display-mode: standalone)").matches) return;
 
-    // Already there — show immediately
-    if (window.__installPromptEvent) {
-      console.log("setting visible true");
-      setVisible(true);
-      return;
-    }
-
-    // Wait for it
     const handler = (e) => {
       e.preventDefault();
-      window.__installPromptEvent = e;
+      setDeferredPrompt(e);
       setVisible(true);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-    window.addEventListener("appinstalled", () => setVisible(false));
+    window.addEventListener("appinstalled", () => {
+      setInstalled(true);
+      setVisible(false);
+    });
 
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
   const handleInstall = async () => {
-    const prompt = window.__installPromptEvent;
-    if (!prompt) return;
-    prompt.prompt();
-    const { outcome } = await prompt.userChoice;
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
     if (outcome === "accepted") {
-      window.__installPromptEvent = null;
+      setDeferredPrompt(null);
       setVisible(false);
+      setInstalled(true);
     }
   };
 
-  console.log("PWA render, visible:", visible);
-
-  if (!visible) return null;
+  if (!visible || installed) return null;
 
   return (
     <Fragment>
+       
+       
       <button
         type="button"
         id="downloadBtn"
@@ -55,7 +57,8 @@ export default function PWA() {
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="16" height="16"
+          width="16"
+          height="16"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
