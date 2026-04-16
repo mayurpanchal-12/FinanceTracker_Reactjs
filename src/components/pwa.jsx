@@ -7,6 +7,11 @@ export default function PWA() {
   const [visible, setVisible] = useState(false);
   const [installed, setInstalled] = useState(false);
   console.log("pwa open ");
+  useEffect(() => {
+  console.log("PWA mounted");
+  console.log("standalone:", window.matchMedia("(display-mode: standalone)").matches);
+  console.log("prompt:", window.__installPromptEvent);
+}, []);
   
   useEffect(() => {
     // Already installed
