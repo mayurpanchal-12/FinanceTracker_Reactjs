@@ -1,35 +1,42 @@
-
-
 import { Fragment, useState, useEffect } from "react";
 
 export default function PWA() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [visible, setVisible] = useState(false);
   const [installed, setInstalled] = useState(false);
-  console.log("pwa open ");
+
   useEffect(() => {
-  console.log("PWA mounted");
-  console.log("standalone:", window.matchMedia("(display-mode: standalone)").matches);
-  console.log("prompt:", window.__installPromptEvent);
-}, []);
-  
-  useEffect(() => {
-    // Already installed
+    // Already installed as standalone
     if (window.matchMedia("(display-mode: standalone)").matches) return;
 
+    // ✅ Read what main.jsx already captured
+    if (window.__installPromptEvent) {
+      setDeferredPrompt(window.__installPromptEvent);
+      setVisible(true);
+      return;
+    }
+
+    // Fallback if component mounts before event fires
     const handler = (e) => {
       e.preventDefault();
+      window.__installPromptEvent = e;
       setDeferredPrompt(e);
       setVisible(true);
     };
 
-    window.addEventListener("beforeinstallprompt", handler);
-    window.addEventListener("appinstalled", () => {
+    const installedHandler = () => {
       setInstalled(true);
       setVisible(false);
-    });
+      window.__installPromptEvent = null;
+    };
 
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    window.addEventListener("beforeinstallprompt", handler);
+    window.addEventListener("appinstalled", installedHandler);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("appinstalled", installedHandler);
+    };
   }, []);
 
   const handleInstall = async () => {
@@ -40,6 +47,7 @@ export default function PWA() {
       setDeferredPrompt(null);
       setVisible(false);
       setInstalled(true);
+      window.__installPromptEvent = null;
     }
   };
 
@@ -47,8 +55,6 @@ export default function PWA() {
 
   return (
     <Fragment>
-       
-       
       <button
         type="button"
         id="downloadBtn"
