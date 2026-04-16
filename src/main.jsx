@@ -6,17 +6,14 @@ export default function PWA() {
   const [installed, setInstalled] = useState(false);
 
   useEffect(() => {
-    // Already installed as standalone
     if (window.matchMedia("(display-mode: standalone)").matches) return;
 
-    // ✅ Read what main.jsx already captured
     if (window.__installPromptEvent) {
       setDeferredPrompt(window.__installPromptEvent);
       setVisible(true);
       return;
     }
 
-    // Fallback if component mounts before event fires
     const handler = (e) => {
       e.preventDefault();
       window.__installPromptEvent = e;

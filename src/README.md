@@ -6,6 +6,7 @@
 ![Cloudinary](https://img.shields.io/badge/Cloudinary-File%20Storage-blue?logo=cloudinary)
 ![GitHub](https://img.shields.io/badge/GitHub-Repo-black?logo=github)
 ![Vercel](https://img.shields.io/badge/Vercel-Deployment-black?logo=vercel)
+![PWA](https://img.shields.io/badge/PWA-Enabled-purple?logo=googlechrome)
 
 ---
 
@@ -40,7 +41,7 @@ Advanced Finance Tracker is a complete personal finance platform where users can
 - Read live finance news via Alpha Vantage API
 - Use voice-to-text for faster transaction entry
 - Switch between light and Plum & Gold elegant theme
-
+- install as PWA
 ---
 
 ## 🧭 Navigation
