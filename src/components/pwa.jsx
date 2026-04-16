@@ -6,7 +6,8 @@ export default function PWA() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [visible, setVisible] = useState(false);
   const [installed, setInstalled] = useState(false);
-
+  console.log("pwa open ");
+  
   useEffect(() => {
     // Already installed
     if (window.matchMedia("(display-mode: standalone)").matches) return;
@@ -41,6 +42,8 @@ export default function PWA() {
 
   return (
     <Fragment>
+       
+       
       <button
         type="button"
         id="downloadBtn"
