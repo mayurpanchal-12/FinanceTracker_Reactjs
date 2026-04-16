@@ -34,8 +34,8 @@ export default function Header({ onOpenSidebar }) {
         </button>
 
         <NavBar />
-      </div>
 
+      </div>
       <div className="mt-8 h-px bg-gradient-to-r from-transparent via-primary/15 to-transparent" />
     </header>
   );

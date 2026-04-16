@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import DownloadDropdown from './DownloadDropdown';
+import PWA from './pwa';
 
 const MAIN_LINKS = [
   { to: '/', label: 'Tracker', icon: '◈', end: true },
@@ -35,6 +36,8 @@ export default function NavBar() {
       ))}
       <div className="hidden sm:block border-l border-gray-300 ml-1 mr-1 my-auto h-6 opacity-30" />
       <DownloadDropdown />
+      <PWA/>
     </nav>
+    
   );
 }
