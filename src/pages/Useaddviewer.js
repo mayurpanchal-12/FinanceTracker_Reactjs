@@ -20,8 +20,10 @@ export default function useAddViewer(user, onSuccess) {
     e.preventDefault();
 
     if (!name.trim()) { toast.error('Please enter a name.'); return; }
-    if (!email.trim()) { toast.error('Please enter an email.'); return; }
-    if (password.length < 6) { toast.error('Password must be at least 6 characters.'); return; }
+   if (!email.trim()) { toast.error('Please enter an email.'); return; }
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+if (!emailRegex.test(email.trim())) { toast.error('Please enter a valid email.'); return; }
+if (password.length < 6) { toast.error('Password must be at least 6 characters.'); return; }
     if (email.trim().toLowerCase() === user.email.toLowerCase()) {
       toast.error('You cannot add yourself as a viewer.');
       return;
