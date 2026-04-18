@@ -62,7 +62,7 @@ export default function LoginPage() {
   const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);
   await sendEmailVerification(newUser);
   await signOut(auth);
-  setSuccess('Account created! Please verify your email before logging in.');
+setSuccess('Account created! Check your inbox — if you don\'t see it, check your spam/junk folder and mark it as "Not Spam".');
   setIsRegister(false);
   return;
 }else {

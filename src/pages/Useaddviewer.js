@@ -76,7 +76,7 @@ setLoading(true);
       }
 
       await sendEmailVerification(newViewer);
-toast.success(`Viewer "${name}" added! They must verify their email before logging in.`);
+
       onSuccess({ id: viewerUid, name: name.trim(), email: email.trim() });
       setName('');
       setEmail('');
