@@ -2,11 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
   sendPasswordResetEmail,
+  sendEmailVerification,
+  signOut,
 } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import { useAuth } from '../context/AuthContext';
@@ -56,9 +59,13 @@ export default function LoginPage() {
     setLoading(true);
     try {
       if (isRegister) {
-        await createUserWithEmailAndPassword(auth, email, password);
-        navigate('/');
-      } else {
+  const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);
+  await sendEmailVerification(newUser);
+  await signOut(auth);
+  setSuccess('Account created! Please verify your email before logging in.');
+  setIsRegister(false);
+  return;
+}else {
         await signInWithEmailAndPassword(auth, email, password);
         navigate('/');
       }

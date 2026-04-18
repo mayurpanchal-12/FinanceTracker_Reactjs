@@ -1,10 +1,14 @@
 import { useState } from 'react';
+
+
 import {
   getAuth as getSecondaryAuth,
   signOut as secondarySignOut,
   createUserWithEmailAndPassword,
   deleteUser,
+  sendEmailVerification,
 } from 'firebase/auth';
+
 import { initializeApp, deleteApp } from 'firebase/app';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
@@ -71,7 +75,8 @@ setLoading(true);
         throw dbErr;
       }
 
-      toast.success(`Viewer "${name}" added successfully!`);
+      await sendEmailVerification(newViewer);
+toast.success(`Viewer "${name}" added! They must verify their email before logging in.`);
       onSuccess({ id: viewerUid, name: name.trim(), email: email.trim() });
       setName('');
       setEmail('');

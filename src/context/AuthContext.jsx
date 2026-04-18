@@ -23,19 +23,37 @@ export function AuthProvider({ children }) {
 
       setRole(null);
 
-      const viewerDoc = await getDoc(doc(db, 'viewerProfiles', firebaseUser.uid));
-      if (viewerDoc.exists()) {
-        const data = viewerDoc.data();
-        setRole('viewer');
-        setLinkedAdminUid(data.linkedAdminUid);
-        setAdminEmail(data.adminEmail || null);
-      } else {
-        setRole('admin');
-        setLinkedAdminUid(null);
-        setAdminEmail(null);
-      }
+   const viewerDoc = await getDoc(doc(db, 'viewerProfiles', firebaseUser.uid));
+if (viewerDoc.exists()) {
+  // viewer — block if email not verified
+  if (!firebaseUser.emailVerified) {
+    await signOut(auth);
+    setUser(null);
+    setRole(null);
+    setLinkedAdminUid(null);
+    setAdminEmail(null);
+    return;
+  }
+  const data = viewerDoc.data();
+  setRole('viewer');
+  setLinkedAdminUid(data.linkedAdminUid);
+  setAdminEmail(data.adminEmail || null);
+} else {
+  // admin — block if email not verified
+  if (!firebaseUser.emailVerified && firebaseUser.providerData[0]?.providerId === 'password') {
+    await signOut(auth);
+    setUser(null);
+    setRole(null);
+    setLinkedAdminUid(null);
+    setAdminEmail(null);
+    return;
+  }
+  setRole('admin');
+  setLinkedAdminUid(null);
+  setAdminEmail(null);
+}
 
-      setUser(firebaseUser);
+setUser(firebaseUser);
     });
 
     return unsubscribe;
