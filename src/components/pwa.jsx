@@ -13,10 +13,8 @@ export default function PWA() {
 }, []);
 
   useEffect(() => {
-    // Already installed as standalone
     if (window.matchMedia("(display-mode: standalone)").matches) return;
 
-    // ✅ Read what main.jsx already captured
     if (window.__installPromptEvent) {
       setDeferredPrompt(window.__installPromptEvent);
       setVisible(true);
