@@ -29,7 +29,12 @@ if (password.length < 6) { toast.error('Password must be at least 6 characters.'
       return;
     }
 
-    setLoading(true);
+    const confirmed = window.confirm(
+  `Add "${email.trim()}" as a viewer?\n\nMake sure this is a real email — they will use it to log in.`
+);
+if (!confirmed) return;
+
+setLoading(true);
 
     // spin up a secondary Firebase app so creating the viewer account
     // does not sign out the current admin
