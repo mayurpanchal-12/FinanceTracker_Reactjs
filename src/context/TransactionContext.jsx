@@ -22,50 +22,40 @@ import toast from 'react-hot-toast';
 const TransactionContext = createContext(null);
 
 const CATEGORIES = ['Salary', 'Food', 'Transport', 'Shopping', 'Bills', 'Other'];
-
+const DEFAULT_FILTERS = { month: '', type: '', category: '', search: '' };
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
+const handlers = {
+
+  SET_TRANSACTIONS: (state, payload) => payload,
+
+  ADD:              (state, payload) => [...state, payload],
+
+  DELETE:           (state, payload) => state.filter(t => t.id !== payload),
+
+  UPDATE:           (state, payload) => state.map(t =>
+                      t.id === payload.id ? { ...t, ...payload.data } : t),
+
+ 
+
+};
+
 function transactionsReducer(state, action) {
-  switch (action.type) {
-    case 'SET_TRANSACTIONS':
-      return action.payload;
-    case 'ADD':
-      return [...state, action.payload];
-    case 'UPDATE': {
-      const { id, data } = action.payload;
-      const index = state.findIndex((t) => t.id === id);
-      if (index === -1) return state;
-      const next = [...state];
-      next[index] = { ...next[index], ...data };
-      return next;
-    }
-    case 'DELETE':
-      return state.filter((t) => t.id !== action.payload);
-    case 'UNHIGHLIGHT':
-      return state.map((t) =>
-        t.id === action.payload ? { ...t, highlighted: false } : t
-      );
-    default:
-      return state;
-  }
+  const handler = handlers[action.type];
+  return handler ? handler(state, action.payload) : state;
 }
 
+const filterHandlers = {
+  SET_MONTH :(state , payload) => ({ ...state, month: payload }),
+  SET_TYPE :(state , payload) => ({ ...state, type: payload }),
+  SET_CATEGORY :(state , payload) => ({ ...state, category: payload }),
+  SET_SEARCH :(state , payload) => ({ ...state, search: payload }),
+};
 function filtersReducer(state, action) {
-  switch (action.type) {
-    case 'SET_MONTH':
-      return { ...state, month: action.payload };
-    case 'SET_TYPE':
-      return { ...state, type: action.payload };
-    case 'SET_CATEGORY':
-      return { ...state, category: action.payload };
-    case 'SET_SEARCH':
-      return { ...state, search: action.payload };
-    default:
-      return state;
-  }
+  const handler = filterHandlers[action.type];
+  return handler ? handler(state, action.payload) : state;
 }
 
-const DEFAULT_FILTERS = { month: '', type: '', category: '', search: '' };
 
 export function TransactionProvider({ children }) {
   const { user, role, linkedAdminUid } = useAuth();
@@ -76,60 +66,58 @@ export function TransactionProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   // load transactions + filters from Firestore when user logs in
-  useEffect(() => {
-    // user === undefined means Firebase is still rehydrating — wait
-    if (user === undefined) return;
 
-    // user === null means logged out — clear everything
-    if (user === null || role === null) {
-      dispatchTx({ type: 'SET_TRANSACTIONS', payload: [] });
-      setLoading(false);
-      return;
+
+useEffect(() => {
+  if (user === undefined) return;
+  if (user === null || role == null) {
+    dispatchTx({ type: 'SET_TRANSACTIONS', payload: [] });
+    setLoading(false);
+    return;
+  }
+
+   const fetchData = async () => {
+  setLoading(true);
+  try {
+    const today     = todayISO();
+const targetUid = role === 'admin'  ? user.uid
+                : role === 'viewer' ? linkedAdminUid
+                : user.uid;
+
+    const loaded    = await loadTransactions(targetUid);
+    const toPromote = loaded
+        .filter(tx => tx.isScheduled && tx.scheduledDate && tx.scheduledDate <= today)
+      .map(tx => tx.firestoreId);
+    const processed = loaded.map(tx =>
+      toPromote.includes(tx.firestoreId)
+        ? { ...tx, isScheduled: false, scheduledDate: undefined }
+        : tx
+    );
+
+    if (toPromote.length > 0) {
+      await Promise.all(
+        toPromote.map(fid =>
+          updateTxInDB(user.uid, fid, { isScheduled: false, scheduledDate: null })
+        )
+      );
     }
 
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const today = todayISO();
-        const targetUid = role === 'viewer' ? linkedAdminUid : user.uid;
+    dispatchTx({ type: 'SET_TRANSACTIONS', payload: processed });
 
-        const loaded = await loadTransactions(targetUid);
+    const savedFilters = await loadFilters(user.uid);
+    dispatchFilter({ type: 'SET_MONTH',    payload: savedFilters.month });
+    dispatchFilter({ type: 'SET_TYPE',     payload: savedFilters.type });
+    dispatchFilter({ type: 'SET_CATEGORY', payload: savedFilters.category });
+    dispatchFilter({ type: 'SET_SEARCH',   payload: savedFilters.search });
 
-        // collect any scheduled transactions that are due today or earlier
-        const toPromote = [];
-        const processed = loaded.map((tx) => {
-          if (tx.isScheduled && tx.scheduledDate && tx.scheduledDate <= today) {
-            toPromote.push(tx.firestoreId);
-            return { ...tx, isScheduled: false, scheduledDate: undefined };
-          }
-          return tx;
-        });
-
-        // write promotions back to Firestore so they don't re-appear next refresh
-        if (toPromote.length > 0) {
-          await Promise.all(
-            toPromote.map((fid) =>
-              updateTxInDB(user.uid, fid, { isScheduled: false, scheduledDate: null })
-            )
-          );
-        }
-
-        dispatchTx({ type: 'SET_TRANSACTIONS', payload: processed });
-
-        const savedFilters = await loadFilters(user.uid);
-        dispatchFilter({ type: 'SET_MONTH', payload: savedFilters.month });
-        dispatchFilter({ type: 'SET_TYPE', payload: savedFilters.type });
-        dispatchFilter({ type: 'SET_CATEGORY', payload: savedFilters.category });
-        dispatchFilter({ type: 'SET_SEARCH', payload: savedFilters.search });
-      } catch (error) {
-        toast.error('Failed to load transactions.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [user, role, linkedAdminUid]);
+  } catch {
+    toast.error('Failed to load transactions.');
+  } finally {
+    setLoading(false);
+  }
+};
+  fetchData();
+}, [user, role, linkedAdminUid]);
 
   // persist filters to Firestore when they change
   useEffect(() => {
@@ -141,6 +129,8 @@ export function TransactionProvider({ children }) {
     () => transactions.filter((tx) => !tx.isScheduled),
     [transactions]
   );
+
+
 
   const scheduledTransactions = useMemo(
     () => transactions.filter((tx) => tx.isScheduled === true),
@@ -165,20 +155,19 @@ export function TransactionProvider({ children }) {
     return withBalance.reverse();
   }, [mainTransactions, filters]);
 
-  const summaryFromFiltered = useMemo(() => {
-    const income = filteredTransactions
-      .filter((t) => t.type === 'income')
-      .reduce((s, t) => s + Number(t.amount), 0);
-    const expense = filteredTransactions
-      .filter((t) => t.type === 'expense')
-      .reduce((s, t) => s + Number(t.amount), 0);
-    const balance = filteredTransactions.reduce(
-      (s, t) =>
-        s + (t.type === 'income' ? Number(t.amount) : -Number(t.amount)),
-      0
-    );
-    return { income, expense, balance };
-  }, [filteredTransactions]);
+const summaryFromFiltered = useMemo(() => {
+  let income  = 0;
+  let expense = 0;
+
+  filteredTransactions.forEach((transaction) => {
+    if (transaction.type === 'income')
+      income  += Number(transaction.amount);
+    if (transaction.type === 'expense')
+      expense += Number(transaction.amount);
+  });
+
+  return { income, expense, balance: income - expense };
+}, [filteredTransactions]);
 
   // add transaction — save to Firestore + update local state
   const addTransaction = async (tx, opts = {}) => {
@@ -191,29 +180,40 @@ export function TransactionProvider({ children }) {
       : { ...tx };
 
     try {
-      const cleanPayload = Object.fromEntries(
+
+       const cleanPayload = Object.fromEntries(
         Object.entries(payload).filter(([, v]) => v !== undefined)
       );
-      const firestoreId = await saveTransaction(user.uid, cleanPayload);
+      const firestoreId = await saveTransaction(user.uid,  { ...cleanPayload, highlighted: false });
       dispatchTx({
         type: 'ADD',
-        payload: { ...payload, id: firestoreId, firestoreId, balance: 0 },
+        payload: { ...payload, id: firestoreId, firestoreId, balance: 0 , highlighted: false },
       });
       toast.success('Transaction added!');
 
-      // budget warning — use current transactions + new one for accurate spend
-      if (!asScheduled && tx.type === 'expense' && tx.category && budgets[tx.category]) {
-        const thisMonth = todayISO().slice(0, 7);
-        const allTx = [...transactions, { ...payload, id: firestoreId }];
-        const categorySpent = allTx
-          .filter(
-            (t) =>
-              !t.isScheduled &&
-              t.type === 'expense' &&
-              t.category === tx.category &&
-              t.date?.startsWith(thisMonth)
-          )
-          .reduce((s, t) => s + Number(t.amount), 0);
+  if (
+  !asScheduled &&
+  tx.type === 'expense' &&
+  tx.category &&
+  budgets[tx.category]
+) {
+  const thisMonth = todayISO().slice(0, 7);
+
+  const allTx = [
+    ...transactions,
+    { ...payload, id: firestoreId },
+  ];
+
+  const categorySpent = allTx
+    .filter((t) =>
+      !t.isScheduled &&
+      t.type === 'expense' &&
+      t.category === tx.category &&
+      t.date?.startsWith(thisMonth)
+    )
+    .reduce((sum, t) => sum + Number(t.amount), 0);
+
+
         const limit = Number(budgets[tx.category]);
         const pct = Math.round((categorySpent / limit) * 100);
         if (pct >= 100) {
@@ -248,6 +248,10 @@ export function TransactionProvider({ children }) {
     }
   };
 
+
+
+
+
   // delete transaction — delete from Firestore + local state
   const deleteTransaction = async (id) => {
     if (!user || role !== 'admin') return;
@@ -263,9 +267,19 @@ export function TransactionProvider({ children }) {
     }
   };
 
-  const unhighlightTransaction = (id) => {
-    dispatchTx({ type: 'UNHIGHLIGHT', payload: id });
-  };
+  const toggleHighlight = async (id) => {
+  if (!user || role !== 'admin') return;
+  const tx = transactions.find(t => t.id === id);
+  if (!tx?.firestoreId) return;
+
+  const newValue = !tx.highlighted;
+  try {
+    await updateTxInDB(user.uid, tx.firestoreId, { highlighted: newValue });
+    dispatchTx({ type: 'UPDATE', payload: { id, data: { highlighted: newValue } } });
+  } catch {
+    toast.error('Failed to update highlight.');
+  }
+};
 
   const setFilterMonth = (v) =>
     dispatchFilter({ type: 'SET_MONTH', payload: v || '' });
@@ -295,7 +309,7 @@ export function TransactionProvider({ children }) {
       addTransaction,
       updateTransaction,
       deleteTransaction,
-      unhighlightTransaction,
+      toggleHighlight,
       setFilterMonth,
       setFilterType,
       setFilterCategory,
@@ -312,7 +326,9 @@ export function TransactionProvider({ children }) {
       summaryFromFiltered,
       editingId,
       transactionToEdit,
+      toggleHighlight,
       loading,
+      deleteTransaction
     ]
   );
 
@@ -329,3 +345,5 @@ export function useTransactions() {
     throw new Error('useTransactions must be used within TransactionProvider');
   return ctx;
 }
+
+

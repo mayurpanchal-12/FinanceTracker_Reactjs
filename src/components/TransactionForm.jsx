@@ -1,5 +1,5 @@
 import useFormState from './useformstate';
-import { MicIco, StopIco, NoteIco, StarIco, ChevronIco } from './formicons';
+import { MicIco, StopIco, NoteIco, ChevronIco } from './formicons';
 import './css/TransactionForm.css';
 
 function FieldWrap({ label, children }) {
@@ -18,7 +18,6 @@ export default function TransactionForm({ scheduledPage = false }) {
     date, setDate,
     type, setType,
     category, setCategory,
-    highlightActive, setHighlight,
     note, setNote,
     noteVisible, setNoteVisible,
     isListening,
@@ -108,11 +107,7 @@ export default function TransactionForm({ scheduledPage = false }) {
               </select>
               <span className="select-wrap__chevron text-text-light/50"><ChevronIco /></span>
             </div>
-            <button type="button" onClick={() => setHighlight((a) => !a)}
-              title={highlightActive ? 'Remove highlight' : 'Highlight transaction'}
-              className={`highlight-btn ${highlightActive ? 'highlight-btn--active shadow-amber-500/25' : 'highlight-btn--idle'}`}>
-              <StarIco filled={highlightActive} />
-            </button>
+           
           </div>
         </FieldWrap>
 

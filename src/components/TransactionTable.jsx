@@ -78,7 +78,7 @@ function ReceiptModal({ url, onClose }) {
 
 // ── Main Component ────────────────────────────────────────
 export default function TransactionTable() {
-  const { filteredTransactions, filters, deleteTransaction, setEditingId, unhighlightTransaction, summary } = useTransactions();
+ const { filteredTransactions, filters, deleteTransaction, setEditingId, toggleHighlight, summary } = useTransactions();
   const { role } = useAuth();
   const [receiptUrl, setReceiptUrl] = useState(null); // controls modal
 
@@ -178,9 +178,11 @@ export default function TransactionTable() {
                         <>
                           <ActionBtn label="Edit" variant="edit" onClick={() => setEditingId(tx.id)} />
                           <ActionBtn label="Delete" variant="danger" onClick={() => deleteTransaction(tx.id)} />
-                          {tx.highlighted && (
-                            <ActionBtn label="Unstar" variant="neutral" onClick={() => unhighlightTransaction(tx.id)} />
-                          )}
+                         <ActionBtn 
+  label={tx.highlighted ? 'Unstar' : 'Star'} 
+  variant="neutral" 
+  onClick={() => toggleHighlight(tx.id)} 
+/>
                         </>
                       ) : (
                         <span className="text-xs text-text-light/50 italic">view only</span>
