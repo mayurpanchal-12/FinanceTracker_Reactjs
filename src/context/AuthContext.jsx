@@ -10,7 +10,10 @@ export function AuthProvider({ children }) {
   const [role, setRole] = useState(null);
   const [linkedAdminUid, setLinkedAdminUid] = useState(null);
   const [adminEmail, setAdminEmail] = useState(null);
-
+onAuthStateChanged(auth, (user) => {
+  console.log('User:', user);
+  console.log('Provider:', user?.providerData?.[0]);
+});
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (!firebaseUser) {
@@ -23,6 +26,7 @@ export function AuthProvider({ children }) {
 
       setRole(null);
 
+      //doc sets address to viewerProfiles collection with uid as doc id, and getdoc gives us the data of that doc
    const viewerDoc = await getDoc(doc(db, 'viewerProfiles', firebaseUser.uid));
 if (viewerDoc.exists()) {
   // viewer — block if email not verified
