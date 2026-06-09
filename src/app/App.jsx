@@ -22,7 +22,7 @@ const InsightsPage = lazy(() => import("../features/insights/pages/InsightsPage"
 const ManageViewersPage = lazy(
   () => import("../features/viewers/pages/ManageViewersPage"),
 );
-const BudgetPage = lazy(() => import("../features/budget/pages/BudgetPage"));
+const BudgetPage = lazy(() => import("../features/Budget/pages/BudgetPage"));
 const VaultPage = lazy(() => import("../features/vault/pages/VaultPage"));
 
 const withEB = (element) => (

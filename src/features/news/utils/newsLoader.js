@@ -11,12 +11,16 @@ export async function newsLoader() {
       'economy_monetary',
       'economy_fiscal',
     ].join(',');
+
+    const urlParameters = new URLSearchParams({
+      function: 'NEWS_SENTIMENT',
+      topics,
+      sort: 'LATEST',
+      limit: '50',
+      apikey: API_KEY,
+    });
     const url =
-      `https://www.alphavantage.co/query?function=NEWS_SENTIMENT` +
-      `&topics=${encodeURIComponent(topics)}` +
-      `&sort=LATEST` +
-      `&limit=50` +
-      `&apikey=${API_KEY}`;
+      `https://www.alphavantage.co/query?${urlParameters}`;
     
     const response = await fetch(url);
     
