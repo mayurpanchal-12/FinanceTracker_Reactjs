@@ -2,39 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTransactions } from "../../../context/TransactionContext";
 import { downloadCSV } from "../utils/csv";
 import { downloadPDF } from "../utils/pdf";
-
-const DownloadIco = () => (
-  <svg
-    className="w-4 h-4"
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden
-  >
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-    <polyline points="7 10 12 15 17 10" />
-    <line x1="12" y1="15" x2="12" y2="3" />
-  </svg>
-);
-const ChevronIco = () => (
-  <svg
-    className="w-3.5 h-3.5"
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden
-  >
-    <polyline points="6 9 12 15 18 9" />
-  </svg>
-);
+import { Download, ChevronDown } from "lucide-react";
 
 export default function DownloadDropdown() {
   const [open, setOpen] = useState(false);
@@ -81,12 +49,13 @@ export default function DownloadDropdown() {
         }}
         className="btn-primary flex items-center gap-2 text-sm py-2.5 px-5"
       >
-        <DownloadIco />
+      <Download size={16} />
         Export
         <span
           className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         >
-          <ChevronIco />
+<ChevronDown size={14} />
+
         </span>
       </button>
       {open && (

@@ -1,15 +1,19 @@
 import { useLoaderData, useNavigation } from "react-router-dom";
-import { useTransactions } from "../../../context/TransactionContext";
-import { SkeletonCard } from "../../../shared/components/ui/Skeleton";
 import "../css/NewsPage.css";
 
+//convert Alpha Vantage time format to readable date, e.g. "20240614T153000Z" to "Jun 14, 2024"
 const formatAVTime = (s) => {
   if (!s || typeof s !== "string") return "";
+
   const m = s.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})$/);
+
   if (!m) return "";
+
   const [, y, mo, d, h, mi] = m;
   const dt = new Date(`${y}-${mo}-${d}T${h}:${mi}:00Z`);
+
   if (Number.isNaN(dt.getTime())) return "";
+
   return dt.toLocaleDateString(undefined, {
     year: "numeric",
     month: "short",
@@ -25,21 +29,11 @@ const sentimentVariant = (s = "") => {
 };
 
 export default function NewsPage() {
-  // always call all hooks first before any conditional returns
-  const { loading } = useTransactions();
   const news = useLoaderData();
   const navigation = useNavigation();
 
   const isLoading = navigation.state === "loading";
 
-  if (loading)
-    return (
-      <div className="p-4 flex flex-col gap-4">
-        <SkeletonCard lines={3} />
-        <SkeletonCard lines={3} />
-        <SkeletonCard lines={3} />
-      </div>
-    );
 
   return (
     <div className="news-page">

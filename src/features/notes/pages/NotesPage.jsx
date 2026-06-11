@@ -1,8 +1,11 @@
 import { useTransactions } from "../../../context/TransactionContext";
 import { SkeletonCard } from "../../../shared/components/ui/Skeleton";
 import "../css/Notepage.css";
-const fmt = (n) => Number(n).toLocaleString("en-IN");
-
+const fmt = (n) =>
+  Number(n).toLocaleString("en-IN", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
 export default function NotesPage() {
   const { transactions, loading } = useTransactions();
   if (loading)

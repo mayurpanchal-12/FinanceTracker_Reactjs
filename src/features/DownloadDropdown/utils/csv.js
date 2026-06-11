@@ -1,6 +1,7 @@
 
 export function buildCSV(filtered, filters) {
   if (!filtered.length) return null;
+  
   let csv = 'Date,Amount,Type,Category,Description,Running Balance\n';
   filtered.forEach((tx) => {
     csv += `${tx.date},${tx.amount},${tx.type},${tx.category},${tx.info || ''},${tx.balance ?? ''}\n`;

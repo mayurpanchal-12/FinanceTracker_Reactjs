@@ -1,5 +1,6 @@
 import { useTransactions } from "../../../context/TransactionContext";
 
+// Format number to Indian currency format with 2 decimal places, e.g. 1234567.89 to "12,34,567.89"
 const fmt = (n) =>
   Number(n).toLocaleString("en-IN", {
     minimumFractionDigits: 0,
@@ -7,6 +8,7 @@ const fmt = (n) =>
   });
 
 export default function Summary() {
+  //summary state gives income , expense , balnce  from txContext
   const { summary } = useTransactions();
   const bal = Number(summary?.balance ?? 0);
   const balColor = bal >= 0 ? "text-emerald-600" : "text-red-500";
