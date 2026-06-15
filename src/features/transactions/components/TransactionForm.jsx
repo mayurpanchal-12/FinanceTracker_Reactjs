@@ -57,6 +57,7 @@ export default function TransactionForm({ scheduledPage = false }) {
         aria-hidden
       />
 
+{/* form header section */}
       <div className="form-header">
         <div>
           <h2 className="form-header__title">
@@ -78,6 +79,8 @@ export default function TransactionForm({ scheduledPage = false }) {
           </button>
         )}
       </div>
+
+
 
       <form onSubmit={handleSubmit} className="form-grid">
         <FieldWrap label="Amount (₹)">

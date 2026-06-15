@@ -6,6 +6,7 @@ const fmt = (n) =>
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   });
+  
 export default function NotesPage() {
   const { transactions, loading } = useTransactions();
   if (loading)

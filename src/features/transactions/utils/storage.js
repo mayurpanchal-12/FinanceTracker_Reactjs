@@ -24,7 +24,7 @@ export async function loadTransactions(uid) {
   try {
     const q = query(txCollection(uid), orderBy("date", "desc"));
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({ firestoreId: doc.id, ...doc.data() }));
+    return snapshot.docs.map((doc) => ({id: doc.id, firestoreId: doc.id, ...doc.data() }));
   } catch {
     return [];
   }

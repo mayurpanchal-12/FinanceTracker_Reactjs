@@ -5,6 +5,7 @@ import { useTransactions } from "../../../context/TransactionContext";
 import { useSpeechInput } from "../hook/useSpeechInput";
 import {uploadReceipt} from "../../vault/utils/vault";
 export default function useFormState(scheduledPage = false) {
+
   const {
     editingId,
     setEditingId,
@@ -14,26 +15,34 @@ export default function useFormState(scheduledPage = false) {
     categories,
   } = useTransactions();
   const { user } = useAuth();
+  const { isSupported, startListening, stopListening } = useSpeechInput();
+
+
+
+  const defaultCategory = "salary";
+  const defaultType = "income";
 
   const [amount, setAmount] = useState("");
   const [info, setInfo] = useState("");
+  const [isListening, setIsListening] = useState(false);
   const [date, setDate] = useState("");
-  const [type, setType] = useState("income");
-  const [category, setCategory] = useState("Salary");
-  const [highlightActive, setHighlight] = useState(false);
+  const [type, setType] = useState(defaultType);
+  const [category, setCategory] = useState(defaultCategory);
   const [note, setNote] = useState("");
   const [noteVisible, setNoteVisible] = useState(false);
-  const [isListening, setIsListening] = useState(false);
+  const [highlightActive, setHighlight] = useState(false);
+
+  
 
   // ── receipt state ─────────────────────────────────────
-  const [receiptFile, setReceiptFile] = useState(null); // raw File object
-  const [receiptPreview, setReceiptPreview] = useState(null); // local blob URL for preview
+  const [receiptFile, setReceiptFile] = useState(null); 
+  const [receiptPreview, setReceiptPreview] = useState(null); 
   const [uploadingReceipt, setUploadingReceipt] = useState(false);
   const receiptInputRef = useRef(null);
   // ─────────────────────────────────────────────────────
 
   const infoRef = useRef(null);
-  const { isSupported, startListening, stopListening } = useSpeechInput();
+ 
 
   useEffect(() => {
     if (!transactionToEdit && !editingId) return;
@@ -41,8 +50,8 @@ export default function useFormState(scheduledPage = false) {
       setAmount(String(transactionToEdit.amount));
       setInfo(transactionToEdit.info || "");
       setDate(transactionToEdit.scheduledDate || transactionToEdit.date);
-      setType(transactionToEdit.type);
-      setCategory(transactionToEdit.category || "Salary");
+      setType(transactionToEdit.type  || defaultType );
+      setCategory(transactionToEdit.category || defaultCategory);
       setHighlight(!!transactionToEdit.highlighted);
       const n = transactionToEdit.note ? String(transactionToEdit.note) : "";
       setNote(n);
@@ -77,8 +86,8 @@ export default function useFormState(scheduledPage = false) {
     setAmount("");
     setInfo("");
     setDate("");
-    setType("income");
-    setCategory("Salary");
+    setType(defaultType);
+    setCategory(defaultCategory);
     setHighlight(false);
     setNote("");
     setNoteVisible(false);
@@ -88,81 +97,72 @@ export default function useFormState(scheduledPage = false) {
     if (receiptInputRef.current) receiptInputRef.current.value = "";
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const amt = Number(amount);
-    const trimmedInfo = info.trim();
-    if (!date || !trimmedInfo || Number.isNaN(amt) || amt <= 0) {
-      toast.error("Please enter a positive amount and fill all fields.");
-      return;
-    }
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (editingId !== null) {
-      // ── edit mode ──────────────────────────────────────
-      const today = new Date().toISOString().slice(0, 10);
-      const isScheduled = scheduledPage && date > today;
-      const updateData = {
-        date,
-        amount: amt,
-        info: trimmedInfo,
-        type,
-        category,
-        highlighted: highlightActive,
-        note: note.trim() || undefined,
-      };
-      if (isScheduled) {
-        updateData.isScheduled = true;
-        updateData.scheduledDate = date;
-      } else if (transactionToEdit?.isScheduled) {
-        updateData.isScheduled = false;
-        updateData.scheduledDate = undefined;
-      }
-      updateTransaction(editingId, updateData);
-      clearForm();
-    } else {
-      // ── add mode ───────────────────────────────────────
-      // 1. upload receipt first if selected
-      let receiptUrl = undefined;
-      if (receiptFile && user) {
-        setUploadingReceipt(true);
-        try {
-          // pass null as txId — we don't have it yet, vault saves it anyway
-          const saved = await uploadReceipt(user.uid, receiptFile, null);
-          receiptUrl = saved.url;
-        } catch {
-          toast.error(
-            "Receipt upload failed — transaction saved without receipt.",
-          );
-        } finally {
-          setUploadingReceipt(false);
-        }
-      }
+  const amt = Number(amount);
+  const trimmedInfo = info.trim();
 
-      // 2. add transaction with receiptUrl if available
-      addTransaction(
-        {
-          date,
-          amount: amt,
-          info: trimmedInfo,
-          type,
-          category,
-          highlighted: highlightActive,
-          note: note.trim() || undefined,
-          ...(receiptUrl && { receiptUrl }), // only add if receipt uploaded
-        },
-        { scheduledWhenFuture: scheduledPage },
-      );
+  if (!date || !trimmedInfo || Number.isNaN(amt) || amt <= 0) {
+    toast.error("Please enter a positive amount and fill all fields.");
+    return;
+  }
 
-      // 3. reset form
-      setAmount("");
-      setInfo("");
-      setNote("");
-      setNoteVisible(false);
-      setReceiptFile(null);
-      setReceiptPreview(null);
-      if (receiptInputRef.current) receiptInputRef.current.value = "";
-    }
+  const transactionData = {
+    date,
+    amount: amt,
+    info: trimmedInfo,
+    type,
+    category,
+    highlighted: highlightActive,
+    note: note.trim() || undefined,
   };
+
+  // Edit Mode
+  if (editingId !== null) {
+    const today = new Date().toISOString().slice(0, 10);
+
+    if (scheduledPage && date > today) {
+      transactionData.isScheduled = true;
+      transactionData.scheduledDate = date;
+    } else if (transactionToEdit?.isScheduled) {
+      transactionData.isScheduled = false;
+      transactionData.scheduledDate = undefined;
+    }
+
+    updateTransaction(editingId, transactionData);
+    clearForm();
+    return;
+  }
+
+  // Add Mode
+  let receiptUrl;
+
+  if (receiptFile && user) {
+    setUploadingReceipt(true);
+
+    try {
+      const saved = await uploadReceipt(user.uid, receiptFile, null);
+      receiptUrl = saved.url;
+    } catch {
+      toast.error(
+        "Receipt upload failed — transaction saved without receipt.",
+      );
+    } finally {
+      setUploadingReceipt(false);
+    }
+  }
+
+  addTransaction(
+    {
+      ...transactionData,
+      ...(receiptUrl && { receiptUrl }),
+    },
+    { scheduledWhenFuture: scheduledPage },
+  );
+
+  clearForm();
+};
 
   const handleMicClick = () => {
     if (!isListening) {

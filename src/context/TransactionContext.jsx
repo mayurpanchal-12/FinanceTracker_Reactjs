@@ -67,7 +67,7 @@ export function TransactionProvider({ children }) {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // load transactions + filters from Firestore when user logs in
+  //Initia Mount => load transactions and filters from Firestore, and promote any scheduled txs that are now due
 
   useEffect(() => {
     if (user === undefined) return;
@@ -137,6 +137,8 @@ export function TransactionProvider({ children }) {
     saveFilters(user.uid, filters);
   }, [filters, user, loading]);
 
+   //main state based on transaction and filter 
+
   const mainTransactions = useMemo(
     () => transactions.filter((tx) => !tx.isScheduled),
     [transactions],
@@ -177,7 +179,7 @@ export function TransactionProvider({ children }) {
     return { income, expense, balance: income - expense };
   }, [filteredTransactions]);
 
-  // add transaction — save to Firestore + update local state
+//function that upadtes master state transaction and filters and firestore 
   const addTransaction = async (tx, opts = {}) => {
     if (!user || role !== "admin") return;
     const today = todayISO();
@@ -246,7 +248,7 @@ export function TransactionProvider({ children }) {
     }
   };
 
-  // update transaction — update in Firestore + local state
+
   const updateTransaction = async (id, data) => {
     if (!user || role !== "admin") return;
 
@@ -261,7 +263,7 @@ export function TransactionProvider({ children }) {
     }
   };
 
-  // delete transaction — delete from Firestore + local state
+
   const deleteTransaction = async (id) => {
     if (!user || role !== "admin") return;
 
@@ -277,6 +279,9 @@ export function TransactionProvider({ children }) {
   };
 
   const toggleHighlight = async (id) => {
+
+ console.log("clicked id:", id);
+
     if (!user || role !== "admin") return;
     const tx = transactions.find((t) => t.id === id);
     if (!tx?.firestoreId) return;
@@ -293,6 +298,7 @@ export function TransactionProvider({ children }) {
     }
   };
 
+  //just sets filters in state, which triggers useEffect to persist to Firestore; runs on change to any filter input
   const setFilterMonth = (v) =>
     dispatchFilter({ type: "SET_MONTH", payload: v || "" });
   const setFilterType = (v) =>
@@ -301,12 +307,17 @@ export function TransactionProvider({ children }) {
     dispatchFilter({ type: "SET_CATEGORY", payload: v || "" });
   const setFilterSearch = (v) =>
     dispatchFilter({ type: "SET_SEARCH", payload: v || "" });
-
+  
+//return transaction being edited based on editingId, to prefill form in edit mode; runs on chnage to transactions or editingId
   const transactionToEdit = useMemo(
     () => (editingId ? transactions.find((t) => t.id === editingId) : null),
     [transactions, editingId],
   );
 
+
+
+
+  
   const value = useMemo(
     () => ({
       transactions,
