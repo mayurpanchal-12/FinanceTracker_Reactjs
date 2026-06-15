@@ -4,6 +4,9 @@ import './css/TransactionTable.css';
 import { useAuth } from '../../../context/AuthContext';
 import ReceiptModal from './receiptModal';
 import useRowHighlight from '../utils/rowHighlight';
+import {Sparkles} from 'lucide-react';
+
+
 
 const fmt = (n) => Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -114,7 +117,8 @@ export default function TransactionTable() {
 
                             
                          <ActionBtn 
-  label={tx.highlighted ? 'Unstar' : 'Star'} 
+  // label={tx.highlighted ? 'Unstar' : 'Star'} 
+    label={<Sparkles filled={tx.highlighted} className="w-4 h-4"/>}
   variant="neutral" 
 onClick={() => {
   console.log("Transaction:", tx);

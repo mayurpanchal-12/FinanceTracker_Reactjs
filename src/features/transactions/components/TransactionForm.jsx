@@ -1,12 +1,7 @@
-import {
-  ChevronIco,
-  MicIco,
-  NoteIco,
-  StopIco,
-} from "./formicons";
-import "../css/TransactionForm.css";
 
+import {Square ,Mic , NotebookText , CircleChevronDown } from 'lucide-react'
 import useFormState from "./useformstate";
+import "./css/TransactionForm.css";
 
 function FieldWrap({ label, children }) {
   return (
@@ -112,7 +107,8 @@ export default function TransactionForm({ scheduledPage = false }) {
                 title={isListening ? "Stop" : "Voice input"}
                 className={`desc-field-mic ${isListening ? "desc-field-mic--listening" : "desc-field-mic--idle hover:bg-primary/8"}`}
               >
-                {isListening ? <StopIco /> : <MicIco />}
+                {isListening ? <Square className ="w-[17px] h-[17px]" /> : 
+                                 <Mic className= " w-[18px] h-[18px]" />}
               </button>
             )}
           </div>
@@ -138,7 +134,7 @@ export default function TransactionForm({ scheduledPage = false }) {
               <option value="expense">Expense</option>
             </select>
             <span className="select-wrap__chevron text-text-light/50">
-              <ChevronIco />
+              <CircleChevronDown className = "w-3.5 h-3.5 pointer-events-none" />
             </span>
           </div>
         </FieldWrap>
@@ -158,7 +154,7 @@ export default function TransactionForm({ scheduledPage = false }) {
                 ))}
               </select>
               <span className="select-wrap__chevron text-text-light/50">
-                <ChevronIco />
+                <CircleChevronDown className = "w-3.5 h-3.5 pointer-events-none" />
               </span>
             </div>
           </div>
@@ -227,7 +223,7 @@ export default function TransactionForm({ scheduledPage = false }) {
               onClick={() => setNoteVisible((v) => !v)}
               className="btn-ghost form-actions__note-btn"
             >
-              <NoteIco />
+              <NotebookText  className=" w-4 h-4"/>
               {noteVisible ? "Hide note" : "Add note"}
             </button>
             <button

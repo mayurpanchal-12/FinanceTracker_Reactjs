@@ -103,23 +103,3 @@
 .form-actions__submit-btn {
   @apply flex-1 text-sm py-[10px] text-center;
 }
-
-.ico-mic {
-  @apply w-[18px] h-[18px];
-}
-
-.ico-stop {
-  @apply w-[17px] h-[17px];
-}
-
-.ico-note {
-  @apply w-4 h-4;
-}
-
-.ico-star {
-  @apply w-4 h-4;
-}
-
-.ico-chevron {
-  @apply w-3.5 h-3.5 pointer-events-none;
-}
