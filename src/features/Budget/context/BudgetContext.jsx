@@ -1,7 +1,6 @@
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useState,
@@ -15,11 +14,9 @@ export function BudgetProvider({ children }) {
   const { user, role, linkedAdminUid } = useAuth();
   const [budgets, setBudgets] = useState({});
   const [loading, setLoading] = useState(true);
-
-  // viewers see the admin's budgets (read-only), admin manages their own
   const targetUid = role === "viewer" ? linkedAdminUid : user?.uid;
   const canEdit = role === "admin";
-
+//set budgets from Firestore on component mount or when targetUid changes
   useEffect(() => {
     if (!targetUid) {
       setBudgets({});
@@ -37,33 +34,28 @@ export function BudgetProvider({ children }) {
       .finally(() => setLoading(false));
   }, [targetUid]);
 
-  const persist = useCallback(
+  // save updated budgets to Firestore
+  const persist =
     async (next) => {
       if (!canEdit || !user?.uid) return;
       const ref = doc(db, "users", user.uid, "meta", "budgets");
       await setDoc(ref, next);
-    },
-    [canEdit, user?.uid],
-  );
+    }
 
-  const setBudgetForCategory = useCallback(
-    async (cat, amount) => {
+  // update budget for a specific category and persist the change
+  const setBudgetForCategory =  async (cat, amount) => {
       const next = { ...budgets, [cat]: Number(amount) };
       setBudgets(next);
       await persist(next);
-    },
-    [budgets, persist],
-  );
-
-  const removeBudgetForCategory = useCallback(
-    async (cat) => {
+    }
+  
+//remove budget for a specific category and persist the change
+  const removeBudgetForCategory =  async (cat) => {
       const next = { ...budgets };
       delete next[cat];
       setBudgets(next);
       await persist(next);
-    },
-    [budgets, persist],
-  );
+    }
 
   return (
     <BudgetContext.Provider
