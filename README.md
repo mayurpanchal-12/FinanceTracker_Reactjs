@@ -42,7 +42,7 @@ Advanced Finance Tracker is a complete personal finance platform where users can
 - Filter and search transactions by month, type, and category
 - RBAC - admin can manage viewers and viewer can only read entries of admin
 - Users can set custom budgets and receive real-time warnings when their expenses exceed the defined budget limits.
-- Delivers advanced financial insights such as income analysis, month-over-month comparisons, peak activity dates, savings rate, highest income sources, key observations, and total income tracking.
+- Delivers advanced financial insights such as income analysis, month-over-month comparisons, most active day (this month), savings rate, biggest single income entry (this month), key observations, and total income tracking.
 - Enables seamless data export for backup and further analysis.
 - Export data as CSV or PDF
 - View interactive charts (line + pie) for income/expense analysis
@@ -200,8 +200,8 @@ Unknown route → Wildcard 404 page shown ✅
 ---
 ### 📊 Insights & Analytics
 - Provides detailed income analysis including trends, month-over-month comparisons, savings rate, and key observations
-- Highlights most active dates, highest income entries, and total income tracking
-- Enables data-driven financial decisions through clear visual summaries
+- Highlights most active day and biggest single income entry (both scoped to the current month),
+- all-time total income tracking Enables data-driven financial decisions through clear visual summaries
 ---
 ### 💰 Budget Management
 - Users can set custom budgets for better financial planning
