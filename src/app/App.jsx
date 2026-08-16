@@ -11,7 +11,6 @@ import "./App.css";
 import DashboardLayout from "./DashboardLayout";
 import ErrorBoundry from "../shared/components/ui/ErrorBoundry";
 import ProtectedRoute from "./ProtectedRoute";
-
 const HomePage = lazy(() => import("../pages/HomePage"));
 const ChartPage = lazy(() => import("../features/chart/pages/ChartPage"));
 const SetTransactionPage = lazy(() => import("../features/transactions/pages/SetTransactionPage"));

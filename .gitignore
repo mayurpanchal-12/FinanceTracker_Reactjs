@@ -2,3 +2,7 @@ node_modules/
 dist/
 .env
 src/context/auth.jsx
+# useinsightsOld.js
+src\features\insights\hook\useinsightsOld.js
+src/features/chart.zip
+src/slice/

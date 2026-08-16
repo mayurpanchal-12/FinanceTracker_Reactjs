@@ -1,4 +1,4 @@
-
+import { useEffect } from "react";
 
 const shimmer = {
   background: 'linear-gradient(90deg, var(--sk-base) 25%, var(--sk-shine) 50%, var(--sk-base) 75%)',
@@ -6,6 +6,9 @@ const shimmer = {
   animation: 'skeleton-shimmer 1.6s ease-in-out infinite',
 };
 
+//if we are in browser and the style tag is not already present, add it to the head
+//and define the keyframes and variables for the skeleton shimmer effect
+// it create single row of skeletons with shimmer effect without fixed height and width, so we can use it for any component with different sizes
 if (typeof document !== 'undefined' && !document.getElementById('sk-style')) {
   const s = document.createElement('style');
   s.id = 'sk-style';
@@ -20,7 +23,11 @@ if (typeof document !== 'undefined' && !document.getElementById('sk-style')) {
   document.head.appendChild(s);
 }
 
-export function Skeleton({ width = '100%', height = '14px', borderRadius = '8px', className = '' }) {
+
+
+//this create a single skeleton with shimmer effect and have width, height and border radius as props.
+//████░░████
+export default  function Skeleton({ width = '100%', height = '14px', borderRadius = '8px', className = '' }) {
   return (
     <div
       className={className}
@@ -29,6 +36,20 @@ export function Skeleton({ width = '100%', height = '14px', borderRadius = '8px'
   );
 }
 
+
+
+// We already have 2 fixed skeletons (title + value).
+// Then we generate (lines - 1) additional text lines.
+// So if lines = 3, we get:
+// 2 fixed skeletons + 2 extra skeletons = 4 total.
+/*
+┌─────────────┐
+│ ████        │ 40%
+│ ██████      │ 60%
+│ ██████████  │ 100%
+│ ███████     │ 75%
+└─────────────┘
+*/
 export function SkeletonCard({ lines = 3 }) {
   return (
     <div className="card p-5 flex flex-col gap-3">
@@ -41,6 +62,19 @@ export function SkeletonCard({ lines = 3 }) {
   );
 }
 
+
+
+
+
+
+//the div which have 3 skeletons will reapeated number of count times;
+/*
+┌───────┐ ┌───────┐ ┌───────┐
+│ ███   │ │ ███   │ │ ███   │
+│ █████ │ │ █████ │ │ █████ │
+│ ██    │ │ ██    │ │ ██    │
+└───────┘ └───────┘ └───────┘
+*/
 export function SkeletonSummary({ count = 3 }) {
   return (
     <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${count}, 1fr)` }}>
@@ -55,14 +89,19 @@ export function SkeletonSummary({ count = 3 }) {
   );
 }
 
+
+
 export function SkeletonTable({ rows = 5, cols = 5 }) {
   return (
     <div className="card overflow-hidden">
+      {/* header row with random width skeletons */}
       <div className="flex gap-4 px-4 py-3 border-b border-gray-100 dark:border-white/5">
         {Array.from({ length: cols }).map((_, i) => (
           <Skeleton key={i} width={`${Math.random() * 40 + 50}px`} height="10px" />
         ))}
       </div>
+
+      {/* data rows with random width skeletons */}
       {Array.from({ length: rows }).map((_, r) => (
         <div key={r} className="flex gap-4 px-4 py-3 border-b border-gray-50 dark:border-white/3">
           {Array.from({ length: cols }).map((_, c) => (
@@ -74,18 +113,39 @@ export function SkeletonTable({ rows = 5, cols = 5 }) {
   );
 }
 
+
+
+
+
+//2 fixed skeletons (title + value) and 1 extra skeleton for the chart based on height
+/*
+┌───────────────────────┐
+│ ██████████   ████     │
+│                       │
+│ ████████████████████  │
+│ ████████████████████  │
+│ ████████████████████  │
+│ ████████████████████  │
+│                       │
+└───────────────────────┘
+*/
 export function SkeletonChart({ height = '260px' }) {
+   console.log("[SkeletonChart] mounted");
+  useEffect(() => () => console.log("[SkeletonChart] unmounted"), []);
   return (
     <div className="card p-5 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <Skeleton width="140px" height="14px" />
         <Skeleton width="60px" height="14px" />
       </div>
-      <div style={{ height, ...shimmer, borderRadius: '12px' }} />
+      <Skeleton height={height} borderRadius="12px" />
     </div>
   );
 }
 
+//1. single skeleton
+//2. skeleton summary with 3 skeletons
+//3. skeleton table with 6 rows and 5 columns
 export function SkeletonPage() {
   return (
     <div className="flex flex-col gap-6 px-4 py-2 animate-fade-in">
@@ -96,4 +156,3 @@ export function SkeletonPage() {
   );
 }
 
-export default Skeleton;
