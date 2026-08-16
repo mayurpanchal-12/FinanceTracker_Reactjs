@@ -4,10 +4,15 @@ const fmt = (n) =>
 export default function SmartObservationBanner({ insights }) {
   const { savingsRate, topCategory, biggestExpense } = insights;
 
-  const borderColor =
-    savingsRate >= 20 ? 'border-l-emerald-400'
-    : savingsRate >= 0 ? 'border-l-yellow-400'
-    : 'border-l-red-400';
+  // const borderColor =
+  //   savingsRate >= 20 ? 'border-l-emerald-400'
+  //   : savingsRate >= 0 ? 'border-l-yellow-400'
+  //   : 'border-l-red-400';
+
+const borderColor =
+  savingsRate >= 30 ? 'border-l-emerald-400'
+  : savingsRate >= 0 ? 'border-l-yellow-400'
+  : 'border-l-red-400';
 
   return (
     <div className={`card px-6 py-4 border-l-4 ${borderColor}`}>

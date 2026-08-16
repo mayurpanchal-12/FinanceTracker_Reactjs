@@ -65,7 +65,7 @@ export default function InsightsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {insights.topCategory && (
           <div className="card px-6 py-5">
-            <p className="section-label mb-2">Highest spending category</p>
+            <p className="section-label mb-2">Highest spending category this month</p>
             <div className="flex items-center gap-3 mt-3">
               <span className="text-3xl">🏆</span>
               <div>
@@ -85,9 +85,20 @@ export default function InsightsPage() {
           <div className="flex items-center gap-3 mt-3">
             <span className="text-3xl">💰</span>
             <div>
-              <p
+              {/* <p
                 className={`text-3xl font-extrabold ${insights.savingsRate >= 0 ? "text-emerald-600" : "text-red-500"}`}
-              >
+              > */}
+              <p
+  className={`text-3xl font-extrabold ${
+    insights.savingsRate >= 30
+      ? "text-emerald-600"
+      : insights.savingsRate >= 10
+        ? "text-yellow-600"
+        : insights.savingsRate >= 0
+          ? "text-yellow-600"
+          : "text-red-500"
+  }`}
+>
                 {insights.savingsRate}%
               </p>
               <p className="text-text-light text-xs mt-0.5">
@@ -113,7 +124,7 @@ export default function InsightsPage() {
 
         {insights.mostActiveDay && (
           <div className="card px-6 py-5">
-            <p className="section-label mb-2">Most active day</p>
+            <p className="section-label mb-2">Most active day this month</p>
             <div className="flex items-center gap-3 mt-3">
               <span className="text-3xl">📅</span>
               <div>
@@ -130,7 +141,7 @@ export default function InsightsPage() {
 
         {insights.biggestExpense && (
           <div className="card px-6 py-5">
-            <p className="section-label mb-2">Biggest single expense</p>
+            <p className="section-label mb-2">Biggest single expense this month</p>
             <div className="flex items-center gap-3 mt-3">
               <span className="text-3xl">💸</span>
               <div>
@@ -153,7 +164,7 @@ export default function InsightsPage() {
 
         {insights.biggestIncome && (
           <div className="card px-6 py-5">
-            <p className="section-label mb-2">Biggest single income</p>
+            <p className="section-label mb-2">Biggest single income this month</p>
             <div className="flex items-center gap-3 mt-3">
               <span className="text-3xl">🤑</span>
               <div>
