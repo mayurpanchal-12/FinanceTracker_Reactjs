@@ -45,6 +45,8 @@ export default function TransactionForm({ scheduledPage = false }) {
     removeReceipt,
   } = useFormState(scheduledPage);
 
+  const today = new Date().toISOString().slice(0, 10);
+
   return (
     <section className="card form-card">
       <div
@@ -114,14 +116,25 @@ export default function TransactionForm({ scheduledPage = false }) {
           </div>
         </FieldWrap>
 
-        <FieldWrap label="Date">
+        {/* <FieldWrap label="Date">
           <input
             type="date"
             className="field"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
+        </FieldWrap> */}
+<FieldWrap label="Date">
+          <input
+            type="date"
+            className="field"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            max={!scheduledPage ? today : undefined}
+            min={scheduledPage ? today : undefined}
+          />
         </FieldWrap>
+
 
         <FieldWrap label="Type">
           <div className="select-wrap">
